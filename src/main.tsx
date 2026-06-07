@@ -5,6 +5,7 @@ import { BrowserRouter } from 'react-router-dom';
 import { queryClient } from '@/api/queryClient';
 import { AppRoutes } from '@/routes/AppRoutes';
 import '@/styles/index.css';
+import '@/i18n'; // 
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>

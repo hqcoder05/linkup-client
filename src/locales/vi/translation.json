@@ -1,0 +1,16 @@
+{
+  "navbar": {
+    "feed": "Bảng tin",
+    "connections": "Kết nối",
+    "network": "Mạng lưới",
+    "messages": "Tin nhắn",
+    "login": "Đăng nhập",
+    "register": "Đăng ký"
+  },
+  "home": {
+    "title": "LinkUp giúp mọi người chia sẻ công việc, tìm kiếm đồng nghiệp và duy trì kết nối.",
+    "subtitle": "Phiên bản React hiện đại của mạng xã hội nguyên bản: bảng tin, hồ sơ, kết nối, thông báo và chat theo thời gian thực.",
+    "join_btn": "Tham gia LinkUp",
+    "open_feed_btn": "Mở bảng tin"
+  }
+}

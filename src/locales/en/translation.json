@@ -1,0 +1,16 @@
+{
+  "navbar": {
+    "feed": "Feed",
+    "connections": "Connections",
+    "network": "Network",
+    "messages": "Messages",
+    "login": "Login",
+    "register": "Register"
+  },
+  "home": {
+    "title": "LinkUp helps people share work, discover peers, and keep the conversation moving.",
+    "subtitle": "A modern React version of the original social flow: feed, profiles, connections, notifications, and realtime chat.",
+    "join_btn": "Join LinkUp",
+    "open_feed_btn": "Open feed"
+  }
+}
