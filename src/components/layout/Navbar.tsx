@@ -1,4 +1,4 @@
-import { LogOut, Menu, Settings, User } from 'lucide-react';
+import { Bell, LogOut, Menu, Search, Settings, User } from 'lucide-react';
 import { NavLink, Link, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { clsx } from 'clsx';
@@ -24,15 +24,15 @@ export function Navbar() {
   };
 
   return (
-    <header className="fixed top-0 z-50 w-full border-b border-slate-200 bg-white/80 backdrop-blur-md font-['Inter',_sans-serif]">
-      <nav className="mx-auto flex h-[80px] max-w-[1200px] items-center justify-between px-6 xl:px-0">
+    <header className="fixed top-0 z-50 w-full border-b border-slate-200 bg-slate-50/95 backdrop-blur-md font-['Inter',_sans-serif]">
+      <nav className="mx-auto flex h-[80px] max-w-[1400px] items-center justify-between px-4 sm:px-6 xl:px-0">
         
         <div className="flex items-center gap-10">
           <Link to={user ? '/feed' : '/'} className="font-['Plus_Jakarta_Sans',_sans-serif] text-[22px] font-bold tracking-tight text-slate-900">
             LinkUp
           </Link>
 
-          <div className="hidden items-center gap-8 md:flex">
+          <div className="hidden items-center gap-8 lg:flex">
             {navItems.map((item) => (
               <NavLink
                 key={item.to}
@@ -86,6 +86,31 @@ export function Navbar() {
                     {item.label}
                   </NavLink>
                 ))}
+              </div>
+
+              <div className="hidden items-center gap-5 md:flex">
+                <label className="hidden h-[62px] w-[318px] items-center gap-4 rounded-2xl border border-slate-200 bg-slate-100 px-5 text-slate-500 shadow-sm xl:flex">
+                  <Search className="h-5 w-5 text-slate-900" />
+                  <input
+                    className="w-full bg-transparent text-[15px] font-medium text-slate-700 outline-none placeholder:text-slate-500"
+                    placeholder="Search executive network"
+                    type="search"
+                  />
+                </label>
+                <Link
+                  to="/notifications"
+                  aria-label="Notifications"
+                  className="rounded-full p-2 text-slate-800 transition-colors hover:bg-slate-100"
+                >
+                  <Bell className="h-6 w-6" />
+                </Link>
+                <Link
+                  to="/settings"
+                  aria-label="Settings"
+                  className="rounded-full p-2 text-slate-800 transition-colors hover:bg-slate-100"
+                >
+                  <Settings className="h-6 w-6" />
+                </Link>
               </div>
 
               <div className="relative mt-4 border-t border-slate-100 pt-4 md:mt-0 md:border-0 md:pt-0">

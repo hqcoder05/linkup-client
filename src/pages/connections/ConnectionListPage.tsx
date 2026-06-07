@@ -15,19 +15,21 @@ export function ConnectionListPage() {
   });
 
   return (
-    <Card className="mx-auto max-w-3xl p-4">
-      <h1 className="text-xl font-bold text-slate-950">Your network</h1>
-      <div className="mt-4 grid gap-3">
-        {(connections.data ?? []).map((item) => (
-          <Link key={item.id} to={`/profile/${item.id}`} className="flex items-center gap-3 rounded-lg border border-slate-200 p-3 hover:bg-slate-50">
-            <Avatar user={item} size="lg" />
-            <div>
-              <div className="font-semibold text-slate-900">{displayName(item)}</div>
-              <div className="text-sm text-slate-500">{item.email}</div>
-            </div>
-          </Link>
-        ))}
-      </div>
-    </Card>
+    <div className="mx-auto max-w-3xl py-8 px-4">
+      <Card className="p-6">
+        <h1 className="text-xl font-bold text-slate-900">Your network</h1>
+        <div className="mt-6 grid gap-4">
+          {(connections.data ?? []).map((item) => (
+            <Link key={item.id} to={`/profile/${item.id}`} className="flex items-center gap-4 rounded-lg border border-slate-100 p-4 hover:bg-slate-50 transition">
+              <Avatar user={item} size="md" />
+              <div>
+                <div className="font-medium text-slate-900">{displayName(item)}</div>
+                <div className="text-sm text-slate-500">{item.email}</div>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </Card>
+    </div>
   );
 }
