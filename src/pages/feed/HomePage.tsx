@@ -26,79 +26,83 @@ export function HomePage() {
   ];
 
   return (
-    <div className="pb-8 font-['Inter',_sans-serif]">
-      {/* Hero Section */}
-      <div className="grid min-h-[60vh] grid-cols-1 items-center gap-12 pt-8 lg:grid-cols-12">
-        {/* Left: Content */}
-        <div className="space-y-6 lg:col-span-7 lg:pr-12">
-          <h1 className="font-['Plus_Jakarta_Sans',_sans-serif] text-[48px] font-extrabold leading-[1.05] tracking-tight text-[#0f172a] sm:text-[64px]">
-            LinkUp helps people share work, discover peers, and keep the conversation moving.
-          </h1>
-          <p className="max-w-2xl text-[18px] font-medium leading-relaxed text-slate-500">
-            A modern React version of the original social flow: feed, profiles, connections, notifications, and realtime chat.
-          </p>
-          <div className="pt-4">
-            <Link to={user ? '/feed' : '/register'} className="group inline-flex items-center gap-2 rounded-lg bg-[#2563EB] px-8 py-4 text-[15px] font-semibold text-white shadow-md shadow-blue-600/20 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-blue-600/30">
-              {user ? 'Open feed' : 'Join LinkUp'}
-              <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
-            </Link>
+    <div className="min-h-screen bg-[#fafafa] pb-12 pt-[120px] font-['Inter',_sans-serif]">
+      <div className="mx-auto max-w-[1200px] px-6 xl:px-0">
+        
+        {/* Hero Section */}
+        <div className="grid grid-cols-1 items-center gap-16 lg:grid-cols-2">
+          {/* Left: Content */}
+          <div className="space-y-6">
+            <h1 className="font-['Plus_Jakarta_Sans',_sans-serif] text-[48px] font-extrabold leading-[1.05] tracking-tight text-slate-900 sm:text-[56px]">
+              LinkUp helps people share work, discover peers, and keep the conversation moving.
+            </h1>
+            <p className="max-w-[500px] text-[17px] font-medium leading-relaxed text-slate-500">
+              A modern React version of the original social flow: feed, profiles, connections, notifications, and realtime chat.
+            </p>
+            <div className="pt-2">
+              <Link to={user ? '/feed' : '/register'} className="group inline-flex items-center gap-2 rounded-lg bg-[#2563EB] px-7 py-3.5 text-[15px] font-semibold text-white shadow-md shadow-blue-600/20 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-blue-600/30">
+                {user ? 'Open feed' : 'Join LinkUp'}
+                <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
+              </Link>
+            </div>
+          </div>
+
+          {/* Right: Feature Grid (Bento Style) */}
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+            {features.map((item, index) => (
+              <div key={item.title} className={`group rounded-[20px] border border-slate-200 bg-white p-7 shadow-sm transition-all duration-300 hover:border-slate-300 hover:shadow-md ${index % 2 !== 0 ? 'sm:mt-8' : ''}`}>
+                <div className="mb-6 flex h-[46px] w-[46px] items-center justify-center rounded-lg bg-slate-100 transition-transform group-hover:scale-110">
+                  <item.icon className="h-[22px] w-[22px] text-slate-700" strokeWidth={2} />
+                </div>
+                <h3 className="mb-2 font-['Plus_Jakarta_Sans',_sans-serif] text-xl font-bold text-slate-900">{item.title}</h3>
+                <p className="text-[14px] leading-relaxed text-slate-500">{item.text}</p>
+              </div>
+            ))}
           </div>
         </div>
 
-        {/* Right: Feature Grid (Bento Style) */}
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:col-span-5">
-          {features.map((item, index) => (
-            <div key={item.title} className={`group rounded-[20px] border border-slate-200/60 bg-white p-7 shadow-sm transition-all duration-300 hover:shadow-md ${index % 2 !== 0 ? 'sm:mt-8' : ''}`}>
-              <div className="mb-5 flex h-[46px] w-[46px] items-center justify-center rounded-full bg-[#eff6ff] transition-transform group-hover:scale-110">
-                <item.icon className="h-[22px] w-[22px] text-[#2563EB]" strokeWidth={2} />
-              </div>
-              <h3 className="mb-2 font-['Plus_Jakarta_Sans',_sans-serif] text-xl font-bold text-slate-900">{item.title}</h3>
-              <p className="text-[14px] leading-relaxed text-slate-500">{item.text}</p>
+        {/* Contextual Dashboard Preview */}
+        <section className="relative mt-32 overflow-hidden rounded-[24px] border border-slate-200/60 bg-white shadow-[0_8px_30px_rgb(0,0,0,0.08)]">
+          <img
+            ref={heroImgRef}
+            alt="LinkUp Platform Interface"
+            className="w-full object-cover transition-transform duration-700"
+            src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=2070"
+          />
+        </section>
+
+        {/* Metrics / Trust Section */}
+        <section className="mt-32 grid grid-cols-2 gap-8 border-t border-slate-200/80 pt-16 md:grid-cols-4">
+          {[
+            { value: '500k+', label: 'Active Users' },
+            { value: '2.4M', label: 'Connections' },
+            { value: '120+', label: 'Industries' },
+            { value: '99.9%', label: 'Uptime' },
+          ].map((metric) => (
+            <div key={metric.label} className="flex flex-col items-center text-center">
+              <span className="font-['Plus_Jakarta_Sans',_sans-serif] text-[48px] font-extrabold text-slate-900">{metric.value}</span>
+              <span className="mt-2 block text-[12px] font-bold uppercase tracking-[0.15em] text-slate-500">{metric.label}</span>
             </div>
           ))}
-        </div>
+        </section>
+
+        {/* Footer */}
+        <footer className="mt-32 border-t border-slate-200/80 pb-6 pt-10">
+          <div className="flex flex-col items-center justify-between gap-6 md:flex-row md:items-start">
+            <div className="flex flex-col items-center gap-2 md:items-start">
+              <span className="font-['Plus_Jakarta_Sans',_sans-serif] text-xl font-bold text-slate-900">LinkUp</span>
+              <span className="text-[13px] font-medium text-slate-500">© 2024 LinkUp Professional Network. All rights reserved.</span>
+            </div>
+            <div className="flex flex-wrap justify-center gap-8">
+              <Link to="#" className="text-[13px] font-medium text-slate-500 transition-colors hover:text-slate-900">Privacy Policy</Link>
+              <Link to="#" className="text-[13px] font-medium text-slate-500 transition-colors hover:text-slate-900">Terms of Service</Link>
+              <Link to="#" className="text-[13px] font-medium text-slate-500 transition-colors hover:text-slate-900">Cookie Policy</Link>
+              <Link to="#" className="text-[13px] font-medium text-slate-500 transition-colors hover:text-slate-900">Contact Us</Link>
+            </div>
+          </div>
+        </footer>
+
       </div>
-
-      {/* Contextual Dashboard Preview */}
-      <section className="relative mt-28 overflow-hidden rounded-2xl border border-slate-200/50 bg-white shadow-[0_20px_50px_-12px_rgba(0,0,0,0.15)]">
-        <img
-          ref={heroImgRef}
-          alt="LinkUp Platform Interface"
-          className="w-full object-cover transition-transform duration-700"
-          src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=2070"
-        />
-      </section>
-
-      {/* Metrics / Trust Section */}
-      <section className="mt-28 grid grid-cols-2 gap-8 border-t border-slate-200/60 pt-16 md:grid-cols-4">
-        {[
-          { value: '500k+', label: 'Active Users' },
-          { value: '2.4M', label: 'Connections' },
-          { value: '120+', label: 'Industries' },
-          { value: '99.9%', label: 'Uptime' },
-        ].map((metric) => (
-          <div key={metric.label} className="flex flex-col items-center text-center">
-            <span className="font-['Plus_Jakarta_Sans',_sans-serif] text-[42px] font-extrabold text-slate-900">{metric.value}</span>
-            <span className="mt-2 block text-[11px] font-bold uppercase tracking-[0.15em] text-slate-400">{metric.label}</span>
-          </div>
-        ))}
-      </section>
-
-      {/* Footer */}
-      <footer className="mt-28 border-t border-slate-200/60 pb-6 pt-10">
-        <div className="flex flex-col items-center justify-between gap-6 md:flex-row md:items-start">
-          <div className="flex flex-col items-center gap-2 md:items-start">
-            <span className="font-['Plus_Jakarta_Sans',_sans-serif] text-xl font-bold text-slate-900">LinkUp</span>
-            <span className="text-[13px] font-medium text-slate-400">© 2024 LinkUp Professional Network. All rights reserved.</span>
-          </div>
-          <div className="flex flex-wrap justify-center gap-8">
-            <Link to="#" className="text-[13px] font-medium text-slate-400 transition-colors hover:text-slate-900">Privacy Policy</Link>
-            <Link to="#" className="text-[13px] font-medium text-slate-400 transition-colors hover:text-slate-900">Terms of Service</Link>
-            <Link to="#" className="text-[13px] font-medium text-slate-400 transition-colors hover:text-slate-900">Cookie Policy</Link>
-            <Link to="#" className="text-[13px] font-medium text-slate-400 transition-colors hover:text-slate-900">Contact Us</Link>
-          </div>
-        </div>
-      </footer>
     </div>
   );
 }
