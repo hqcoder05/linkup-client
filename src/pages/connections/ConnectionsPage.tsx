@@ -1,4 +1,4 @@
-import { Check, Search, UserMinus, UserPlus, X } from 'lucide-react';
+import { Check, Search, UserPlus, X } from 'lucide-react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';

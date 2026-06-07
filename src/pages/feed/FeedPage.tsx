@@ -35,7 +35,7 @@ export function FeedPage() {
                 <Avatar user={user} size="xl" />
               </div>
               <h2 className="mt-4 truncate text-[28px] font-bold leading-tight text-black">
-                {displayName(user)}
+                {displayName(user ?? undefined)}
               </h2>
               <p className="truncate text-[17px] text-slate-800">{user?.email}</p>
               <div className="mt-8 space-y-4 border-y border-slate-200 py-7 text-[17px]">
