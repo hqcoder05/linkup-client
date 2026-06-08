@@ -10,7 +10,11 @@ export type UserDto = {
   email: string;
   fullName: string;
   avatarUrl: string | null;
+  privateAccount: boolean;
   role: string;
+  followersCount?: number;
+  followingCount?: number;
+  followedByCurrentUser?: boolean;
   createdAt: string;
 };
 
@@ -28,6 +32,10 @@ export type ProfileDto = {
   headline: string | null;
   location: string | null;
   websiteUrl: string | null;
+  postsCount: number;
+  followersCount: number;
+  followingCount: number;
+  followedByCurrentUser?: boolean;
   createdAt: string;
   updatedAt: string;
 };
@@ -39,19 +47,46 @@ export type UpdateProfileRequest = {
   headline?: string;
   location?: string;
   websiteUrl?: string;
+  privateAccount?: boolean;
 };
 
 export type PostDto = {
   id: number;
   user: UserDto;
   caption: string | null;
-  imageUrl: string | null;
-  videoUrl: string | null;
+  media: PostMediaDto[];
+  taggedUsers: TaggedUserDto[];
+  hashtags: string[];
   likesCount: number;
   commentsCount: number;
   likedByCurrentUser: boolean;
   createdAt: string;
   updatedAt: string;
+};
+
+export type PostMediaDto = {
+  id: number;
+  url: string;
+  thumbnailUrl: string | null;
+  type: string;
+  position: number;
+  width: number | null;
+  height: number | null;
+};
+
+export type TaggedUserDto = {
+  user: UserDto;
+  mediaPosition: number;
+  x: number | null;
+  y: number | null;
+};
+
+export type PostMediaRequest = {
+  url: string;
+  thumbnailUrl?: string | null;
+  type?: string;
+  width?: number | null;
+  height?: number | null;
 };
 
 export type CommentDto = {
@@ -66,27 +101,22 @@ export type CommentDto = {
 export type MediaDto = {
   id: number;
   url: string;
+  thumbnailUrl: string | null;
   type: string;
+  position: number;
   originalFilename: string;
   fileSize: number;
   createdAt: string;
 };
 
-export type ResumeDto = {
-  id: number;
-  url: string;
-  originalFilename: string;
-  contentType: string;
-  fileSize: number;
-  createdAt: string;
-};
+export type FollowStatus = 'NONE' | 'PENDING' | 'ACCEPTED';
 
-export type ConnectionDto = {
-  requester: UserDto;
-  addressee: UserDto;
-  status: string;
+export type FollowDto = {
+  follower: UserDto;
+  following: UserDto;
+  status: FollowStatus;
   createdAt: string;
-  respondedAt: string | null;
+  approvedAt: string | null;
 };
 
 export type NotificationDto = {

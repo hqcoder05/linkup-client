@@ -1,5 +1,6 @@
 import { Bell, CheckCircle } from 'lucide-react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import { notificationsApi } from '@/api/notifications';
 import { EmptyState } from '@/components/common/EmptyState';
 import { Button } from '@/components/ui/Button';
@@ -7,6 +8,7 @@ import { Card } from '@/components/ui/Card';
 import { formatDateTime } from '@/utils/format';
 
 export function NotificationsPage() {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const notifications = useQuery({ queryKey: ['notifications'], queryFn: notificationsApi.list });
   const read = useMutation({
@@ -19,8 +21,8 @@ export function NotificationsPage() {
     <div className="mx-auto max-w-3xl space-y-4">
       <Card className="flex items-center justify-between p-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-950">Notifications</h1>
-          <p className="text-sm text-slate-500">Latest updates from your network.</p>
+          <h1 className="text-2xl font-bold text-slate-950">{t('notifications.title')}</h1>
+          <p className="text-sm text-slate-500">{t('notifications.unread', { count: unread.length })}</p>
         </div>
         <Button variant="secondary" onClick={() => unread.forEach((item) => read.mutate(item.id))}>
           <CheckCircle className="h-4 w-4" /> Mark read
@@ -43,7 +45,7 @@ export function NotificationsPage() {
             </div>
           </button>
         ))}
-        {notifications.data?.length === 0 && <EmptyState icon={<Bell className="h-10 w-10" />} title="No notifications" text="You are all caught up." />}
+        {notifications.data?.length === 0 && <EmptyState icon={<Bell className="h-10 w-10" />} title={t('notifications.empty')} text="" />}
       </Card>
     </div>
   );

@@ -2,6 +2,7 @@ import { Heart, MessageCircle, MoreVertical, Send, Trash2 } from 'lucide-react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Avatar } from '@/components/common/Avatar';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
@@ -11,6 +12,7 @@ import { displayName, formatDateTime } from '@/utils/format';
 import { useAuthStore } from '@/stores/authStore';
 
 export function PostCard({ post }: { post: PostDto }) {
+  const { t } = useTranslation();
   const [commentsOpen, setCommentsOpen] = useState(false);
   const [comment, setComment] = useState('');
   const queryClient = useQueryClient();
@@ -41,6 +43,7 @@ export function PostCard({ post }: { post: PostDto }) {
     mutationFn: () => postsApi.remove(post.id),
     onSuccess: () => void queryClient.invalidateQueries({ queryKey: ['feed'] }),
   });
+  const primaryMedia = post.media?.[0];
 
   return (
     <Card className="overflow-hidden">
@@ -62,25 +65,29 @@ export function PostCard({ post }: { post: PostDto }) {
                 className="btn-ghost w-full justify-start text-red-600"
                 onClick={() => remove.mutate()}
               >
-                <Trash2 className="h-4 w-4" /> Delete post
+                <Trash2 className="h-4 w-4" /> {t('post.delete_post')}
               </button>
             </div>
           </div>
         )}
       </div>
       {post.caption && <blockquote className="mx-4 border-l-4 border-brand-500 pl-3 text-slate-700">{post.caption}</blockquote>}
-      {post.imageUrl && <img src={post.imageUrl} alt="Post" className="mt-4 max-h-[520px] w-full object-cover" />}
-      {post.videoUrl && <video src={post.videoUrl} className="mt-4 max-h-[520px] w-full bg-black object-contain" controls />}
+      {primaryMedia?.type?.startsWith('video') && (
+        <video src={primaryMedia.url} className="mt-4 max-h-[520px] w-full bg-black object-contain" controls />
+      )}
+      {primaryMedia && !primaryMedia.type?.startsWith('video') && (
+        <img src={primaryMedia.url} alt="Post" className="mt-4 max-h-[520px] w-full object-cover" />
+      )}
       <div className="mt-3 flex items-center justify-between border-t border-slate-200 px-4 py-2">
         <button
           className={post.likedByCurrentUser ? 'btn-ghost text-red-600' : 'btn-ghost'}
           onClick={() => like.mutate()}
         >
           <Heart className="h-4 w-4" fill={post.likedByCurrentUser ? 'currentColor' : 'none'} />
-          Like {post.likesCount}
+          {t('post.like')} {post.likesCount}
         </button>
         <button className="btn-ghost" onClick={() => setCommentsOpen((value) => !value)}>
-          <MessageCircle className="h-4 w-4" /> Comment {post.commentsCount}
+          <MessageCircle className="h-4 w-4" /> {t('post.comment')} {post.commentsCount}
         </button>
       </div>
       {commentsOpen && (
@@ -96,12 +103,12 @@ export function PostCard({ post }: { post: PostDto }) {
                 </div>
               </div>
             ))}
-            {comments.data?.length === 0 && <p className="text-sm text-slate-500">No comments yet.</p>}
+            {comments.data?.length === 0 && <p className="text-sm text-slate-500">{t('post.no_comments')}</p>}
           </div>
           <div className="mt-3 flex gap-2">
             <input
               className="input-field"
-              placeholder="Write a comment..."
+              placeholder={t('post.write_comment')}
               value={comment}
               onChange={(event) => setComment(event.target.value)}
               onKeyDown={(event) => {

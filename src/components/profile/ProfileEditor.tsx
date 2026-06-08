@@ -28,6 +28,7 @@ export function ProfileEditor({ profile, onClose }: { profile?: ProfileDto; onCl
         bio: profile.bio ?? '',
         location: profile.location ?? '',
         websiteUrl: profile.websiteUrl ?? '',
+        privateAccount: profile.user.privateAccount,
       });
     }
   }, [form, profile]);
@@ -47,6 +48,10 @@ export function ProfileEditor({ profile, onClose }: { profile?: ProfileDto; onCl
         <textarea className="input-field min-h-24 resize-none" placeholder="Bio" {...form.register('bio')} />
         <input className="input-field" placeholder="Location" {...form.register('location')} />
         <input className="input-field" placeholder="Website URL" {...form.register('websiteUrl')} />
+        <label className="flex items-center gap-2 rounded-md border border-slate-200 px-3 py-2 text-sm text-slate-700">
+          <input type="checkbox" className="rounded border-slate-300" {...form.register('privateAccount')} />
+          Private account
+        </label>
         <Button disabled={mutation.isPending}>
           <Save className="h-4 w-4" /> Save changes
         </Button>

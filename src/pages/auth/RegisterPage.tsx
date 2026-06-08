@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router-dom';
 import { z } from 'zod';
+import { useTranslation } from 'react-i18next';
 import { authApi } from '@/api/auth';
 import { apiMessage } from '@/api/client';
 import { useAuthStore } from '@/stores/authStore';
@@ -23,6 +24,7 @@ const schema = z
 type FormValues = z.infer<typeof schema>;
 
 export function RegisterPage() {
+  const { t } = useTranslation();
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const navigate = useNavigate();
@@ -41,7 +43,7 @@ export function RegisterPage() {
       setSession(session);
       navigate('/feed', { replace: true });
     } catch (err) {
-      setError(apiMessage(err, 'Registration failed'));
+      setError(apiMessage(err, t('register.error_failed')));
     }
   });
 
@@ -58,10 +60,10 @@ export function RegisterPage() {
             <Network className="h-10 w-10" strokeWidth={1.5} />
           </div>
           <h1 className="font-['Plus_Jakarta_Sans',_sans-serif] text-[28px] font-bold leading-[1.2] text-black sm:text-[32px]">
-            Join LinkUp and start<br />professional conversations.
+            {t('register.title')}
           </h1>
           <p className="mt-4 text-[15px] leading-relaxed text-slate-500">
-            Connect with industry leaders and build<br />your professional legacy.
+            {t('register.subtitle')}
           </p>
         </div>
 
@@ -76,7 +78,7 @@ export function RegisterPage() {
         <form onSubmit={submit} className="space-y-6">
           
           <div className="flex flex-col">
-            <label className="mb-1 text-[13px] font-medium text-slate-900">Full Name</label>
+            <label className="mb-1 text-[13px] font-medium text-slate-900">{t('register.full_name')}</label>
             <input 
               className={inputStyles} 
               placeholder="Eleanor Vance" 
@@ -87,7 +89,7 @@ export function RegisterPage() {
           </div>
 
           <div className="flex flex-col">
-            <label className="mb-1 text-[13px] font-medium text-slate-900">Email</label>
+            <label className="mb-1 text-[13px] font-medium text-slate-900">{t('register.email')}</label>
             <input 
               className={inputStyles} 
               placeholder="eleanor@consultancy.com" 
@@ -102,7 +104,7 @@ export function RegisterPage() {
             {(['password', 'confirmPassword'] as const).map((field) => (
               <div className="flex flex-col" key={field}>
                 <label className="mb-1 text-[13px] font-medium text-slate-900">
-                  {field === 'password' ? 'Password' : 'Confirm Password'}
+                  {field === 'password' ? t('register.password') : t('register.confirm_password')}
                 </label>
                 <div className="relative">
                   <input
@@ -135,7 +137,7 @@ export function RegisterPage() {
               className="mt-0.5 h-4 w-4 rounded border-slate-300 text-black focus:ring-black" 
             />
             <span className="text-[13.5px] leading-relaxed text-slate-500">
-              I agree to the <span className="font-semibold text-black">Terms of Service</span> and <span className="font-semibold text-black">Privacy Policy</span>.
+              {t('register.terms')}
             </span>
           </label>
 
@@ -144,15 +146,15 @@ export function RegisterPage() {
             className="mt-4 w-full rounded-lg bg-black px-4 py-3.5 text-[15px] font-semibold text-white transition-all hover:bg-black/90 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 disabled:opacity-70" 
             disabled={form.formState.isSubmitting}
           >
-            Register
+            {t('register.submit')}
           </button>
         </form>
 
         {/* --- Footer --- */}
         <p className="mt-8 text-center text-[14.5px] text-slate-500">
-          Already have an account?{' '}
+          {t('register.already')}{' '}
           <Link to="/login" className="font-bold text-black transition-opacity hover:opacity-80">
-            Login
+            {t('register.login')}
           </Link>
         </p>
       </div>

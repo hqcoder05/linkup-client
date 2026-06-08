@@ -1,9 +1,11 @@
 import { useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { Rss, Users, UserCircle, MessageSquare, ArrowRight } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '@/stores/authStore';
 
 export function HomePage() {
+  const { t } = useTranslation();
   const user = useAuthStore((state) => state.user);
   const heroImgRef = useRef<HTMLImageElement>(null);
 
@@ -19,10 +21,10 @@ export function HomePage() {
   }, []);
 
   const features = [
-    { icon: Rss, title: 'Feed', text: 'Stay updated with curated industry insights and professional updates.' },
-    { icon: Users, title: 'Connections', text: 'Build your high-value network with industry leading professionals.' },
-    { icon: UserCircle, title: 'Profiles', text: 'Showcase your career milestones in a clean, minimalist portfolio.' },
-    { icon: MessageSquare, title: 'Messages', text: 'Communicate securely with real-time encrypted professional chat.' },
+    { icon: Rss, title: t('home.features.feed'), text: t('home.features.feed_text') },
+    { icon: Users, title: t('home.features.follow'), text: t('home.features.follow_text') },
+    { icon: UserCircle, title: t('home.features.profiles'), text: t('home.features.profiles_text') },
+    { icon: MessageSquare, title: t('home.features.messages'), text: t('home.features.messages_text') },
   ];
 
   return (
@@ -34,14 +36,14 @@ export function HomePage() {
           {/* Left: Content */}
           <div className="space-y-6">
             <h1 className="font-['Plus_Jakarta_Sans',_sans-serif] text-[48px] font-extrabold leading-[1.05] tracking-tight text-slate-900 sm:text-[56px]">
-              LinkUp helps people share work, discover peers, and keep the conversation moving.
+              {t('home.title')}
             </h1>
             <p className="max-w-[500px] text-[17px] font-medium leading-relaxed text-slate-500">
-              A modern React version of the original social flow: feed, profiles, connections, notifications, and realtime chat.
+              {t('home.subtitle')}
             </p>
             <div className="pt-2">
               <Link to={user ? '/feed' : '/register'} className="group inline-flex items-center gap-2 rounded-lg bg-[#2563EB] px-7 py-3.5 text-[15px] font-semibold text-white shadow-md shadow-blue-600/20 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-blue-600/30">
-                {user ? 'Open feed' : 'Join LinkUp'}
+                {user ? t('home.open_feed_btn') : t('home.join_btn')}
                 <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
               </Link>
             </div>
@@ -75,7 +77,7 @@ export function HomePage() {
         <section className="mt-32 grid grid-cols-2 gap-8 border-t border-slate-200/80 pt-16 md:grid-cols-4">
           {[
             { value: '500k+', label: 'Active Users' },
-            { value: '2.4M', label: 'Connections' },
+            { value: '2.4M', label: 'Follows' },
             { value: '120+', label: 'Industries' },
             { value: '99.9%', label: 'Uptime' },
           ].map((metric) => (

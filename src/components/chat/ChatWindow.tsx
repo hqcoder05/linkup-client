@@ -1,6 +1,7 @@
 import { Send } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import { Avatar } from '@/components/common/Avatar';
 import { Button } from '@/components/ui/Button';
 import { chatApi } from '@/api/chat';
@@ -9,6 +10,7 @@ import type { ConversationDto, MessageDto, UserDto } from '@/types/api';
 import { displayName, formatDateTime } from '@/utils/format';
 
 export function ChatWindow({ conversation, currentUser }: { conversation?: ConversationDto; currentUser: UserDto | null }) {
+  const { t } = useTranslation();
   const [draft, setDraft] = useState('');
   const [liveMessages, setLiveMessages] = useState<MessageDto[]>([]);
   const queryClient = useQueryClient();
@@ -55,8 +57,8 @@ export function ChatWindow({ conversation, currentUser }: { conversation?: Conve
           <div className="mx-auto mb-3 flex h-16 w-16 items-center justify-center rounded-full bg-slate-200 text-slate-500">
             <Send className="h-7 w-7" />
           </div>
-          <h2 className="font-semibold text-slate-900">Choose a conversation</h2>
-          <p className="text-sm text-slate-500">Select a conversation to start messaging.</p>
+          <h2 className="font-semibold text-slate-900">{t('chat.choose_conversation')}</h2>
+          <p className="text-sm text-slate-500">{t('chat.choose_body')}</p>
         </div>
       </section>
     );
@@ -70,7 +72,7 @@ export function ChatWindow({ conversation, currentUser }: { conversation?: Conve
     <section className="flex min-h-0 flex-1 flex-col bg-slate-50">
       <div className="border-b border-slate-200 bg-white px-4 py-3">
         <h2 className="font-semibold text-slate-900">{title}</h2>
-        <p className="text-xs text-slate-500">Conversation</p>
+        <p className="text-xs text-slate-500">{t('chat.conversation')}</p>
       </div>
       <div className="min-h-0 flex-1 space-y-3 overflow-y-auto p-4">
         {allMessages.map((message) => {
@@ -94,7 +96,7 @@ export function ChatWindow({ conversation, currentUser }: { conversation?: Conve
           <textarea
             className="input-field min-h-10 flex-1 resize-none"
             rows={1}
-            placeholder="Type a message..."
+            placeholder={t('chat.type_message')}
             value={draft}
             onChange={(event) => setDraft(event.target.value)}
             onKeyDown={(event) => {

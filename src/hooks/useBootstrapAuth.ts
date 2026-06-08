@@ -4,13 +4,13 @@ import { useAuthStore } from '@/stores/authStore';
 
 export function useBootstrapAuth() {
   const token = useAuthStore((state) => state.accessToken);
-  const setSession = useAuthStore((state) => state.setSession);
+  const setUser = useAuthStore((state) => state.setUser);
 
   return useQuery({
     queryKey: ['auth-me'],
     queryFn: async () => {
       const session = await authApi.me();
-      setSession(session);
+      setUser(session.user);
       return session;
     },
     enabled: Boolean(token),

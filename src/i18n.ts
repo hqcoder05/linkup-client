@@ -4,21 +4,30 @@ import { initReactI18next } from 'react-i18next';
 import translationEN from './locales/en/translation.json';
 import translationVI from './locales/vi/translation.json';
 
-// Cấu hình các ngôn ngữ
 const resources = {
   en: { translation: translationEN },
-  vi: { translation: translationVI }
+  vi: { translation: translationVI },
 };
 
+const savedLanguage = localStorage.getItem('linkup-language');
+const browserLanguage = navigator.language.toLowerCase().startsWith('vi') ? 'vi' : 'en';
+
 i18n
-  .use(initReactI18next) // Truyền i18n instance cho react-i18next
+  .use(initReactI18next)
   .init({
     resources,
-    lng: 'en', // Ngôn ngữ mặc định
-    fallbackLng: 'en', // Nếu ngôn ngữ hiện tại không có từ khóa dịch, sẽ fallback về tiếng Anh
+    lng: savedLanguage || browserLanguage,
+    fallbackLng: 'en',
     interpolation: {
-      escapeValue: false // React đã tự động escape chống XSS rồi
-    }
+      escapeValue: false,
+    },
   });
+
+i18n.on('languageChanged', (language) => {
+  localStorage.setItem('linkup-language', language);
+  document.documentElement.lang = language;
+});
+
+document.documentElement.lang = i18n.language;
 
 export default i18n;

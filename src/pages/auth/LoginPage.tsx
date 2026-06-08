@@ -61,6 +61,8 @@ export function LoginPage() {
             <input 
               className="w-full rounded-lg border border-slate-200 px-4 py-3 text-[15px] focus:border-black focus:outline-none focus:ring-1 focus:ring-black" 
               placeholder="name@company.com" 
+              type="email"
+              autoComplete="email"
               {...form.register('email')} 
             />
           </div>
@@ -71,6 +73,7 @@ export function LoginPage() {
               <input
                 className="w-full rounded-lg border border-slate-200 px-4 py-3 pr-12 text-[15px] focus:border-black focus:outline-none focus:ring-1 focus:ring-black"
                 type={showPassword ? 'text' : 'password'}
+                autoComplete="current-password"
                 {...form.register('password')}
               />
               <button 

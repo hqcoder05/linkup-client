@@ -1,5 +1,6 @@
 import { Search } from 'lucide-react';
 import { clsx } from 'clsx';
+import { useTranslation } from 'react-i18next';
 import { Avatar } from '@/components/common/Avatar';
 import type { ConversationDto, UserDto } from '@/types/api';
 import { displayName, formatDateTime } from '@/utils/format';
@@ -15,6 +16,7 @@ export function ConversationList({
   activeId?: number;
   onSelect: (conversation: ConversationDto) => void;
 }) {
+  const { t } = useTranslation();
   const peer = (conversation: ConversationDto) =>
     conversation.group
       ? null
@@ -23,12 +25,12 @@ export function ConversationList({
   return (
     <aside className="flex min-h-0 flex-col border-r border-slate-200 md:w-80">
       <div className="flex items-center justify-between border-b border-slate-200 p-3">
-        <h1 className="font-semibold text-slate-900">Messages</h1>
+        <h1 className="font-semibold text-slate-900">{t('common.messages')}</h1>
       </div>
       <div className="p-3">
         <div className="relative">
           <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
-          <input className="input-field pl-9" placeholder="Search conversations..." />
+          <input className="input-field pl-9" placeholder={t('chat.search_conversations')} />
         </div>
       </div>
       <div className="min-h-0 flex-1 overflow-y-auto px-2 pb-2">
@@ -53,12 +55,12 @@ export function ConversationList({
                     <span className="text-[11px] text-slate-400">{formatDateTime(conversation.lastMessage.createdAt)}</span>
                   )}
                 </div>
-                <p className="truncate text-xs text-slate-500">{conversation.lastMessage?.content || 'No messages yet'}</p>
+                <p className="truncate text-xs text-slate-500">{conversation.lastMessage?.content || t('chat.no_messages')}</p>
               </div>
             </button>
           );
         })}
-        {conversations.length === 0 && <p className="px-3 py-4 text-sm text-slate-500">No conversations yet.</p>}
+        {conversations.length === 0 && <p className="px-3 py-4 text-sm text-slate-500">{t('feed.no_conversations')}</p>}
       </div>
     </aside>
   );

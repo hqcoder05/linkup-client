@@ -1,32 +1,36 @@
-import { Camera, FileUp, Globe, MapPin, Pencil, UserPlus } from 'lucide-react';
+import { Camera, Globe, Lock, MapPin, Pencil, UserCheck, UserPlus } from 'lucide-react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Avatar } from '@/components/common/Avatar';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { profileApi } from '@/api/profile';
-import type { ProfileDto, UserDto } from '@/types/api';
+import type { FollowStatus, ProfileDto, UserDto } from '@/types/api';
 import { displayName, formatDate } from '@/utils/format';
 
 type ProfileHeaderProps = {
   profile?: ProfileDto;
   user: UserDto;
   postsCount: number;
-  connectionsCount: number;
+  followersCount: number;
+  followingCount: number;
   isMe?: boolean;
+  followStatus?: FollowStatus;
+  isFollowPending?: boolean;
   onEdit?: () => void;
-  onConnect?: () => void;
-  connectionStatus?: string;
+  onToggleFollow?: () => void;
 };
 
 export function ProfileHeader({
   profile,
   user,
   postsCount,
-  connectionsCount,
+  followersCount,
+  followingCount,
   isMe,
+  followStatus = 'NONE',
+  isFollowPending,
   onEdit,
-  onConnect,
-  connectionStatus,
+  onToggleFollow,
 }: ProfileHeaderProps) {
   const queryClient = useQueryClient();
   const avatarMutation = useMutation({
@@ -37,10 +41,8 @@ export function ProfileHeader({
     },
   });
 
-  const resumeMutation = useMutation({
-    mutationFn: profileApi.uploadResume,
-    onSuccess: () => void queryClient.invalidateQueries({ queryKey: ['resumes'] }),
-  });
+  const isFollowing = followStatus === 'ACCEPTED';
+  const isRequested = followStatus === 'PENDING';
 
   return (
     <Card className="p-5">
@@ -71,8 +73,13 @@ export function ProfileHeader({
                 <Pencil className="h-4 w-4" /> Edit profile
               </Button>
             ) : (
-              <Button variant={connectionStatus === 'CONNECTED' ? 'secondary' : 'primary'} onClick={onConnect}>
-                <UserPlus className="h-4 w-4" /> {connectionStatus === 'PENDING' ? 'Pending' : connectionStatus === 'CONNECTED' ? 'Connected' : 'Connect'}
+              <Button
+                variant={isFollowing || isRequested ? 'secondary' : 'primary'}
+                onClick={onToggleFollow}
+                disabled={isFollowPending}
+              >
+                {isFollowing ? <UserCheck className="h-4 w-4" /> : <UserPlus className="h-4 w-4" />}
+                {isFollowing ? 'Following' : isRequested ? 'Requested' : 'Follow'}
               </Button>
             )}
           </div>
@@ -80,8 +87,14 @@ export function ProfileHeader({
           <p className="mt-1 max-w-2xl text-sm text-slate-500">{profile?.bio || 'No bio added yet.'}</p>
           <div className="mt-3 flex flex-wrap gap-4 text-sm text-slate-500">
             <span>{postsCount} posts</span>
-            <span>{connectionsCount} connections</span>
+            <span>{followersCount} followers</span>
+            <span>{followingCount} following</span>
             <span>Joined {formatDate(user.createdAt)}</span>
+            {user.privateAccount && (
+              <span className="inline-flex items-center gap-1">
+                <Lock className="h-4 w-4" /> Private
+              </span>
+            )}
             {profile?.location && (
               <span className="inline-flex items-center gap-1">
                 <MapPin className="h-4 w-4" /> {profile.location}
@@ -93,21 +106,6 @@ export function ProfileHeader({
               </a>
             )}
           </div>
-          {isMe && (
-            <label className="btn-secondary mt-4 cursor-pointer">
-              <FileUp className="h-4 w-4" />
-              Upload CV
-              <input
-                className="hidden"
-                type="file"
-                accept=".pdf,.doc,.docx"
-                onChange={(event) => {
-                  const file = event.target.files?.[0];
-                  if (file) resumeMutation.mutate(file);
-                }}
-              />
-            </label>
-          )}
         </div>
       </div>
     </Card>

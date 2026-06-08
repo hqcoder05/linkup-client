@@ -1,12 +1,12 @@
 import { apiClient, unwrap } from '@/api/client';
-import type { CommentDto, MediaDto, PostDto } from '@/types/api';
+import type { CommentDto, MediaDto, PostDto, PostMediaRequest } from '@/types/api';
 
 export const postsApi = {
   feed: (page = 0, size = 20) =>
     unwrap<PostDto[]>(apiClient.get('/posts/feed', { params: { page, size } })),
   byUser: (userId: number, page = 0, size = 100) =>
     unwrap<PostDto[]>(apiClient.get(`/users/${userId}/posts`, { params: { page, size } })),
-  create: (input: { caption?: string; imageUrl?: string; videoUrl?: string }) =>
+  create: (input: { caption?: string; media?: PostMediaRequest[]; tags?: unknown[] }) =>
     unwrap<PostDto>(apiClient.post('/posts', input)),
   update: (postId: number, input: { caption: string }) =>
     unwrap<PostDto>(apiClient.put(`/posts/${postId}`, input)),

@@ -10,10 +10,10 @@ export function ProfilePostGrid({ posts }: { posts: PostDto[] }) {
     <div className="grid grid-cols-3 gap-1">
       {posts.map((post) => (
         <article key={post.id} className="group relative aspect-square overflow-hidden bg-slate-900">
-          {post.imageUrl ? (
-            <img src={post.imageUrl} alt="Profile post" className="h-full w-full object-cover" />
-          ) : post.videoUrl ? (
-            <video src={post.videoUrl} className="h-full w-full object-cover" muted />
+          {post.media?.[0]?.type?.startsWith('video') ? (
+            <video src={post.media[0].url} className="h-full w-full object-cover" muted />
+          ) : post.media?.[0] ? (
+            <img src={post.media[0].url} alt="Profile post" className="h-full w-full object-cover" />
           ) : (
             <div className="flex h-full items-center justify-center bg-brand-600 p-3 text-center text-sm font-semibold text-white">
               {post.caption || 'Text update'}
