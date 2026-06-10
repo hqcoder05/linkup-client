@@ -58,7 +58,7 @@ export function CallOverlay({
             <div className="flex flex-col items-center gap-6">
               <Avatar user={peer} size="xl" />
               <div className="text-center">
-                <h2 className="text-3xl font-black tracking-tight text-white">{displayName(peer)}</h2>
+                <h2 className="text-3xl font-black tracking-tight text-white">{displayName(peer ?? undefined)}</h2>
                 <p className="mt-2 text-sm font-bold uppercase tracking-[0.2em] text-white/40">
                   {status === 'ringing' ? t('chat.incoming_call') : 
                    status === 'dialing' ? t('chat.dialing') : 
