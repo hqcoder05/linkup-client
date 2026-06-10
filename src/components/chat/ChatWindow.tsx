@@ -7,7 +7,9 @@ import { Avatar } from '@/components/common/Avatar';
 import { Button } from '@/components/ui/Button';
 import { chatApi } from '@/api/chat';
 import { postsApi } from '@/api/posts';
-import { createChatClient, subscribeToConversation } from '@/websocket/chatSocket';
+import { useCalling } from '@/hooks/useCalling';
+import { wsManager } from '@/websocket/wsManager';
+import { subscribeToConversation } from '@/websocket/chatSocket';
 import type { ConversationDto, MessageDto, UserDto } from '@/types/api';
 import { isMessageMine, mergeMessagesChronologically } from '@/utils/chat';
 import { displayName } from '@/utils/format';
@@ -15,17 +17,19 @@ import { displayName } from '@/utils/format';
 export function ChatWindow({ conversation, currentUser }: { conversation?: ConversationDto; currentUser: UserDto | null }) {
   const { t } = useTranslation();
   const [draft, setDraft] = useState('');
-  const [notice, setNotice] = useState('');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [liveMessages, setLiveMessages] = useState<MessageDto[]>([]);
+  const { startCall } = useCalling();
   const queryClient = useQueryClient();
   const scrollRef = useRef<HTMLDivElement>(null);
+  
   const messages = useQuery({
     queryKey: ['messages', conversation?.id],
     queryFn: () => chatApi.messages(conversation!.id),
     enabled: Boolean(conversation),
     retry: false,
   });
+
   const send = useMutation({
     mutationFn: async () => {
       const content = draft.trim();
@@ -49,18 +53,15 @@ export function ChatWindow({ conversation, currentUser }: { conversation?: Conve
   useEffect(() => {
     if (!conversation) return;
     setLiveMessages([]);
-    const client = createChatClient();
-    client.onConnect = () => {
-      subscribeToConversation(client, conversation.id, (message) => {
+    wsManager.activate(() => {
+      const client = wsManager.getClient();
+      const sub = subscribeToConversation(client, conversation.id, (message) => {
         setLiveMessages((items) => [...items, message]);
         void queryClient.invalidateQueries({ queryKey: ['conversations'] });
       });
       void chatApi.read(conversation.id);
-    };
-    client.activate();
-    return () => {
-      void client.deactivate();
-    };
+      return () => sub.unsubscribe();
+    });
   }, [conversation, queryClient]);
 
   const allMessages = useMemo(() => {
@@ -73,13 +74,13 @@ export function ChatWindow({ conversation, currentUser }: { conversation?: Conve
 
   if (!conversation) {
     return (
-      <section className="flex flex-1 items-center justify-center bg-slate-50 p-6 text-center">
+      <section className="flex flex-1 items-center justify-center bg-slate-50 dark:bg-black p-6 text-center">
         <div>
-          <div className="mx-auto mb-3 flex h-16 w-16 items-center justify-center rounded-full bg-slate-200 text-slate-500">
+          <div className="mx-auto mb-3 flex h-16 w-16 items-center justify-center rounded-full bg-slate-200 dark:bg-neutral-800 text-slate-500">
             <Send className="h-7 w-7" />
           </div>
-          <h2 className="font-semibold text-slate-900">{t('chat.choose_conversation')}</h2>
-          <p className="text-sm text-slate-500">{t('chat.choose_body')}</p>
+          <h2 className="font-semibold text-slate-900 dark:text-white">{t('chat.choose_conversation')}</h2>
+          <p className="text-sm text-slate-500 dark:text-slate-400">{t('chat.choose_body')}</p>
         </div>
       </section>
     );
@@ -87,47 +88,48 @@ export function ChatWindow({ conversation, currentUser }: { conversation?: Conve
 
   const peer = conversationPeer(conversation, currentUser);
   const title = conversation.name || (conversation.group ? conversation.members.map((member) => displayName(member)).join(', ') : displayName(peer));
-  const showUnsupportedCall = () => {
-    setNotice(t('chat.call_unavailable'));
-    window.setTimeout(() => setNotice(''), 3500);
-  };
 
   return (
-    <section className="flex min-h-0 flex-1 flex-col bg-slate-50">
-      <header className="flex h-20 shrink-0 items-center justify-between border-b border-slate-200 bg-white px-8">
+    <section className="flex min-h-0 flex-1 flex-col bg-slate-50 dark:bg-black transition-colors">
+      <header className="flex h-20 shrink-0 items-center justify-between border-b border-slate-200 dark:border-white/10 bg-white dark:bg-black px-8">
         <div className="flex min-w-0 items-center gap-4">
           <Avatar user={peer} size="lg" />
           <div className="min-w-0">
-            <h2 className="truncate text-lg font-bold text-slate-950">{title}</h2>
-            <p className="text-sm text-emerald-600">
-              <span className="mr-1 inline-block h-2 w-2 rounded-full bg-emerald-500" />
+            <h2 className="truncate text-lg font-bold text-slate-950 dark:text-white">{title}</h2>
+            <p className="text-sm text-emerald-600 dark:text-emerald-500 font-medium">
+              <span className="mr-1.5 inline-block h-2 w-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
               {conversation.group
                 ? t('chat.member_count', { count: conversation.members.length })
                 : t('chat.available')}
             </p>
           </div>
         </div>
-        <div className="flex items-center gap-5 text-slate-900">
-          <button type="button" className="rounded-full p-2 transition-colors hover:bg-slate-100" onClick={showUnsupportedCall} aria-label={t('chat.call')}>
+        <div className="flex items-center gap-5 text-slate-900 dark:text-white/80">
+          <button 
+            type="button" 
+            className="rounded-full p-2.5 transition-all hover:bg-slate-100 dark:hover:bg-white/5 active:scale-90" 
+            onClick={() => startCall(conversation.id, peer, 'audio')} 
+            aria-label={t('chat.call')}
+          >
             <Phone className="h-5 w-5" />
           </button>
-          <button type="button" className="rounded-full p-2 transition-colors hover:bg-slate-100" onClick={showUnsupportedCall} aria-label={t('chat.video_call')}>
+          <button 
+            type="button" 
+            className="rounded-full p-2.5 transition-all hover:bg-slate-100 dark:hover:bg-white/5 active:scale-90" 
+            onClick={() => startCall(conversation.id, peer, 'video')} 
+            aria-label={t('chat.video_call')}
+          >
             <Video className="h-5 w-5" />
           </button>
-          <button type="button" className="rounded-full p-2 transition-colors hover:bg-slate-100" aria-label={t('chat.conversation_info')}>
+          <button type="button" className="rounded-full p-2.5 transition-all hover:bg-slate-100 dark:hover:bg-white/5 active:scale-90" aria-label={t('chat.conversation_info')}>
             <Info className="h-5 w-5" />
           </button>
         </div>
       </header>
-      {notice && (
-        <div className="border-b border-amber-100 bg-amber-50 px-8 py-2 text-sm font-medium text-amber-800">
-          {notice}
-        </div>
-      )}
 
-      <div ref={scrollRef} className="min-h-0 flex-1 overflow-y-auto px-8 py-7">
+      <div ref={scrollRef} className="min-h-0 flex-1 overflow-y-auto px-8 py-7 [scrollbar-width:thin] dark:scrollbar-color-white/10">
         <div className="mb-7 flex justify-center">
-          <span className="rounded-full bg-slate-200 px-5 py-2 text-sm font-medium uppercase tracking-wide text-slate-700">
+          <span className="rounded-full bg-slate-200 dark:bg-neutral-800 px-5 py-2 text-sm font-bold uppercase tracking-wide text-slate-700 dark:text-slate-300">
             {t('chat.today')}
           </span>
         </div>
@@ -145,29 +147,29 @@ export function ChatWindow({ conversation, currentUser }: { conversation?: Conve
         </div>
       </div>
 
-      <footer className="shrink-0 border-t border-slate-200 bg-white px-8 py-6">
+      <footer className="shrink-0 border-t border-slate-200 dark:border-white/10 bg-white dark:bg-black px-8 py-6">
         {selectedFile && (
-          <div className="mb-3 flex items-center justify-between gap-3 rounded-xl bg-slate-100 px-4 py-2 text-sm text-slate-700">
-            <span className="truncate">{selectedFile.name}</span>
-            <button type="button" className="rounded-full p-1 hover:bg-slate-200" onClick={() => setSelectedFile(null)}>
+          <div className="mb-4 flex items-center justify-between gap-3 rounded-2xl bg-slate-100 dark:bg-neutral-900 px-4 py-3 text-sm text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-white/5">
+            <span className="truncate font-bold">{selectedFile.name}</span>
+            <button type="button" className="rounded-full p-1.5 hover:bg-slate-200 dark:hover:bg-white/10 transition-colors" onClick={() => setSelectedFile(null)}>
               <X className="h-4 w-4" />
             </button>
           </div>
         )}
         <div className="flex items-center gap-4">
-          <label className="cursor-pointer rounded-full p-2 text-slate-800 transition-colors hover:bg-slate-100" aria-label={t('post.add_image')}>
-            <ImagePlus className="h-5 w-5" />
+          <label className="cursor-pointer rounded-full p-2.5 text-slate-800 dark:text-white/60 transition-all hover:bg-slate-100 dark:hover:bg-white/5 active:scale-90" aria-label={t('post.add_image')}>
+            <ImagePlus className="h-5.5 w-5.5" />
             <input className="hidden" type="file" accept="image/*" onChange={(event) => setSelectedFile(event.target.files?.[0] ?? null)} />
           </label>
-          <label className="cursor-pointer rounded-full p-2 text-slate-800 transition-colors hover:bg-slate-100" aria-label={t('post.video')}>
-            <Paperclip className="h-5 w-5" />
+          <label className="cursor-pointer rounded-full p-2.5 text-slate-800 dark:text-white/60 transition-all hover:bg-slate-100 dark:hover:bg-white/5 active:scale-90" aria-label={t('post.video')}>
+            <Paperclip className="h-5.5 w-5.5" />
             <input className="hidden" type="file" accept="video/*" onChange={(event) => setSelectedFile(event.target.files?.[0] ?? null)} />
           </label>
-          <button type="button" className="rounded-full p-2 text-slate-800 transition-colors hover:bg-slate-100" aria-label={t('chat.emoji')}>
-            <Smile className="h-5 w-5" />
+          <button type="button" className="rounded-full p-2.5 text-slate-800 dark:text-white/60 transition-all hover:bg-slate-100 dark:hover:bg-white/5 active:scale-90" aria-label={t('chat.emoji')}>
+            <Smile className="h-5.5 w-5.5" />
           </button>
           <textarea
-            className="min-h-14 flex-1 resize-none rounded-full border-0 bg-slate-100 px-7 py-4 text-[16px] leading-6 text-slate-900 outline-none placeholder:text-slate-500 focus:ring-2 focus:ring-slate-200"
+            className="min-h-14 flex-1 resize-none rounded-2xl border-none bg-slate-100 dark:bg-neutral-900 px-7 py-4 text-[16px] leading-6 text-slate-900 dark:text-white outline-none placeholder:text-slate-500 dark:placeholder:text-slate-600 focus:ring-2 focus:ring-slate-200 dark:focus:ring-white/5 transition-all"
             rows={1}
             placeholder={t('chat.type_message')}
             value={draft}
@@ -182,13 +184,13 @@ export function ChatWindow({ conversation, currentUser }: { conversation?: Conve
           <Button
             disabled={(!draft.trim() && !selectedFile) || send.isPending}
             onClick={() => send.mutate()}
-            className="h-14 w-14 rounded-full bg-black p-0 text-white shadow-lg hover:bg-slate-900"
+            className="h-14 w-14 rounded-2xl bg-black dark:bg-white p-0 text-white dark:text-black shadow-xl hover:bg-slate-900 dark:hover:bg-slate-100 transition-all active:scale-95"
             aria-label={t('post.post')}
           >
-            <Send className="h-5 w-5" />
+            <Send className="h-6 w-6" />
           </Button>
         </div>
-        <p className="mt-3 text-center text-xs text-slate-500">{t('chat.enter_hint')}</p>
+        <p className="mt-4 text-center text-[11px] font-bold uppercase tracking-widest text-slate-400 dark:text-slate-600">{t('chat.enter_hint')}</p>
       </footer>
     </section>
   );
@@ -202,18 +204,18 @@ function MessageBubble({ message, mine }: { message: MessageDto; mine: boolean }
         <div>
           <div
             className={clsx(
-              'rounded-2xl px-5 py-4 text-[16px] leading-7 shadow-sm',
+              'rounded-2xl px-5 py-4 text-[15px] leading-relaxed shadow-sm ring-1 ring-black/5 dark:ring-white/5',
               mine
-                ? 'rounded-br-sm bg-black text-white'
-                : 'rounded-bl-sm bg-slate-200 text-slate-950',
+                ? 'rounded-br-sm bg-slate-950 text-white dark:bg-white dark:text-black'
+                : 'rounded-bl-sm bg-white text-slate-900 dark:bg-neutral-900 dark:text-white',
             )}
           >
             {message.content && <p className="whitespace-pre-wrap">{message.deleted ? '' : message.content}</p>}
             {message.attachmentUrl && <AttachmentPreview url={message.attachmentUrl} mine={mine} />}
           </div>
-          <p className={clsx('mt-1 text-xs text-slate-500', mine ? 'text-right' : 'text-left')}>
+          <p className={clsx('mt-1.5 text-[10px] font-black uppercase tracking-tighter text-slate-400 dark:text-slate-600', mine ? 'text-right' : 'text-left')}>
             {formatMessageTime(message.createdAt)}
-            {mine && <span className="ml-1">✓</span>}
+            {mine && <span className="ml-1 text-blue-500">●</span>}
           </p>
         </div>
       </div>
@@ -224,15 +226,16 @@ function MessageBubble({ message, mine }: { message: MessageDto; mine: boolean }
 function AttachmentPreview({ url, mine }: { url: string; mine: boolean }) {
   const video = /\.(mp4|webm|mov|m4v)(\?|$)/i.test(url);
   if (video) {
-    return <video className="mt-3 max-h-72 rounded-xl object-cover" src={url} controls />;
+    return <video className="mt-3 max-h-80 w-full rounded-xl object-cover" src={url} controls />;
   }
   return (
-    <a href={url} target="_blank" rel="noreferrer">
+    <a href={url} target="_blank" rel="noreferrer" className="block group/media relative overflow-hidden rounded-xl mt-3">
       <img
-        className={clsx('mt-3 max-h-72 rounded-xl object-cover', mine ? 'bg-black' : 'bg-white')}
+        className={clsx('max-h-80 w-full object-cover transition-transform duration-500 group-hover/media:scale-105', mine ? 'bg-slate-900' : 'bg-slate-100')}
         src={url}
         alt="Attachment"
       />
+      <div className="absolute inset-0 bg-black/0 transition-colors group-hover/media:bg-black/10" />
     </a>
   );
 }

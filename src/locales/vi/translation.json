@@ -1,4 +1,4 @@
-﻿{
+{
   "common": {
     "about": "Giới thiệu",
     "accessibility": "Trợ năng",
@@ -8,18 +8,19 @@
     "comments": "bình luận",
     "configure": "Cấu hình",
     "delete": "Xóa",
+    "dark_mode": "Chế độ tối",
     "edit": "Chỉnh sửa",
     "follow": "Theo dõi",
     "followers": "Người theo dõi",
     "following": "Đang theo dõi",
     "joined": "Tham gia",
     "language": "Ngôn ngữ",
+    "light_mode": "Chế độ sáng",
     "login": "Đăng nhập",
     "logout": "Đăng xuất",
     "messages": "Tin nhắn",
     "notifications": "Thông báo",
     "privacy": "Quyền riêng tư",
-    "profile": "Hồ sơ",
     "register": "Đăng ký",
     "save_changes": "Lưu thay đổi",
     "save": "Lưu",
@@ -108,6 +109,8 @@
     "video": "Video",
     "post": "Đăng",
     "could_not_create": "Không thể tạo bài viết.",
+    "media_ready": "Tệp đã sẵn sàng",
+    "remove_media": "Gỡ tệp",
     "like": "Thích",
     "comment": "Bình luận",
     "delete_post": "Xóa bài viết",
@@ -126,7 +129,11 @@
     "empty": "Chưa có tin.",
     "unavailable": "Không thể tải tin.",
     "viewers": "Người xem",
-    "no_viewers": "Chưa có người xem."
+    "no_viewers": "Chưa có người xem.",
+    "global_label": "GLOBAL EXECUTIVE STORIES",
+    "send_reply": "Gửi phản hồi...",
+    "active_viewers": "Người đang xem",
+    "story_context": "Nội dung tin"
   },
   "saved": {
     "title": "Đã lưu",
@@ -166,6 +173,9 @@
     "requested": "Đã gửi yêu cầu",
     "about": "Giới thiệu",
     "gallery": "Thư viện",
+    "posts": "Bài viết",
+    "tab_posts": "Bài viết",
+    "tab_media": "Media",
     "no_bio": "Chưa có giới thiệu.",
     "no_followers": "Chưa có người theo dõi.",
     "not_following": "Chưa theo dõi ai.",
@@ -291,7 +301,9 @@
     "today": "Hôm nay",
     "attach": "Đính kèm tệp",
     "emoji": "Biểu tượng cảm xúc",
-    "call_unavailable": "Gọi thoại và video cần backend signaling/WebRTC. Backend hiện chưa có API này.",
+    "active_call": "Đang gọi",
+    "dialing": "Đang kết nối...",
+    "incoming_call": "Cuộc gọi đến",
     "could_not_send": "Không thể gửi tin nhắn.",
     "enter_hint": "Nhấn Enter để gửi, Shift + Enter để xuống dòng"
   },
@@ -305,4 +317,3 @@
     "view_all": "Xem tất cả thông báo"
   }
 }
-

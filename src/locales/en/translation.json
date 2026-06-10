@@ -1,4 +1,4 @@
-﻿{
+{
   "common": {
     "about": "About",
     "accessibility": "Accessibility",
@@ -8,18 +8,19 @@
     "comments": "comments",
     "configure": "Configure",
     "delete": "Delete",
+    "dark_mode": "Dark mode",
     "edit": "Edit",
     "follow": "Follow",
     "followers": "Followers",
     "following": "Following",
     "joined": "Joined",
     "language": "Language",
+    "light_mode": "Light mode",
     "login": "Login",
     "logout": "Logout",
     "messages": "Messages",
     "notifications": "Notifications",
     "privacy": "Privacy",
-    "profile": "Profile",
     "register": "Register",
     "save_changes": "Save Changes",
     "save": "Save",
@@ -108,6 +109,8 @@
     "video": "Video",
     "post": "Post",
     "could_not_create": "Could not create post.",
+    "media_ready": "Media ready",
+    "remove_media": "Remove media",
     "like": "Like",
     "comment": "Comment",
     "delete_post": "Delete post",
@@ -126,7 +129,11 @@
     "empty": "No stories yet.",
     "unavailable": "Stories are unavailable.",
     "viewers": "Viewers",
-    "no_viewers": "No viewers yet."
+    "no_viewers": "No viewers yet.",
+    "global_label": "GLOBAL EXECUTIVE STORIES",
+    "send_reply": "Send a message...",
+    "active_viewers": "Active viewers",
+    "story_context": "Story context"
   },
   "saved": {
     "title": "Saved",
@@ -166,6 +173,9 @@
     "requested": "Requested",
     "about": "About",
     "gallery": "Gallery",
+    "posts": "Posts",
+    "tab_posts": "Posts",
+    "tab_media": "Media",
     "no_bio": "No bio added yet.",
     "no_followers": "No followers yet.",
     "not_following": "Not following anyone yet.",
@@ -291,7 +301,9 @@
     "today": "Today",
     "attach": "Attach file",
     "emoji": "Emoji",
-    "call_unavailable": "Voice and video calls require backend signaling/WebRTC. The backend does not expose that API yet.",
+    "active_call": "Active Call",
+    "dialing": "Calling...",
+    "incoming_call": "Incoming Call",
     "could_not_send": "Could not send message.",
     "enter_hint": "Press Enter to send, Shift + Enter for new line"
   },
@@ -305,4 +317,3 @@
     "view_all": "View all notifications"
   }
 }
-

@@ -1,11 +1,11 @@
 import { ImagePlus, Send, Video, X } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { postsApi } from '@/api/posts';
+import { Avatar } from '@/components/common/Avatar';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
-import { Avatar } from '@/components/common/Avatar';
 import { useAuthStore } from '@/stores/authStore';
 import type { PostMediaRequest } from '@/types/api';
 
@@ -13,6 +13,7 @@ export function CreatePostCard() {
   const { t } = useTranslation();
   const [caption, setCaption] = useState('');
   const [file, setFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState('');
   const queryClient = useQueryClient();
   const user = useAuthStore((state) => state.user);
 
@@ -20,6 +21,7 @@ export function CreatePostCard() {
     mutationFn: async () => {
       const mediaItems: PostMediaRequest[] = [];
       const uploadedMediaIds: number[] = [];
+
       if (file) {
         const media = file.type.startsWith('video/') ? await postsApi.uploadVideo(file) : await postsApi.uploadImage(file);
         uploadedMediaIds.push(media.id);
@@ -37,6 +39,7 @@ export function CreatePostCard() {
           throw error;
         }
       }
+
       return postsApi.create({ caption, media: mediaItems });
     },
     onSuccess: () => {
@@ -47,30 +50,55 @@ export function CreatePostCard() {
     },
   });
 
+  useEffect(() => {
+    if (!file) {
+      setPreviewUrl('');
+      return;
+    }
+    const url = URL.createObjectURL(file);
+    setPreviewUrl(url);
+    return () => URL.revokeObjectURL(url);
+  }, [file]);
+
   return (
-    <Card className="rounded-lg p-4 shadow-sm">
-      <div className="flex gap-3">
-        <Avatar user={user} size="md" />
-        <textarea
-          className="min-h-20 flex-1 resize-none border-0 bg-transparent pt-2 text-base leading-6 text-slate-900 outline-none placeholder:text-slate-400"
-          placeholder={t('post.share_update')}
-          value={caption}
-          onChange={(event) => setCaption(event.target.value)}
-        />
-      </div>
-      {file && (
-        <div className="mt-3 flex items-center justify-between rounded-md bg-slate-50 px-3 py-2 text-sm text-slate-600 sm:ml-12">
-          <span className="truncate">{file.name}</span>
-          <button onClick={() => setFile(null)} aria-label="Remove file">
-            <X className="h-4 w-4" />
-          </button>
+    <Card className="overflow-hidden border-none p-5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:bg-slate-900/80 dark:ring-1 dark:ring-white/5">
+      <div className="flex gap-4">
+        <Avatar user={user} size="lg" />
+        <div className="min-w-0 flex-1">
+          <textarea
+            className="w-full resize-none border-none bg-transparent pt-2 text-[15px] leading-relaxed text-slate-900 outline-none placeholder:text-slate-400 dark:text-slate-100 dark:placeholder:text-slate-500"
+            placeholder={t('post.share_update')}
+            value={caption}
+            onChange={(event) => setCaption(event.target.value)}
+            rows={2}
+          />
+          
+          {file && (
+            <div className="group relative mt-4 overflow-hidden rounded-2xl border border-slate-100 dark:border-slate-800">
+              <div className="bg-black flex justify-center">
+                {file.type.startsWith('video/') ? (
+                  <video className="max-h-[520px] w-full object-contain" src={previewUrl} controls muted />
+                ) : (
+                  <img className="max-h-[520px] w-full object-contain" src={previewUrl} alt={file.name} />
+                )}
+              </div>
+              <button
+                type="button"
+                onClick={() => setFile(null)}
+                className="absolute right-3 top-3 rounded-full bg-black/60 p-2 text-white backdrop-blur-md transition-all hover:bg-black group-hover:scale-110"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+          )}
         </div>
-      )}
-      <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-slate-200 pt-3 sm:ml-12">
-        <div className="flex flex-wrap items-center gap-5">
-          <label className="inline-flex cursor-pointer items-center gap-2 text-sm font-semibold text-slate-700 transition-colors hover:text-slate-950">
-            <ImagePlus className="h-5 w-5" />
-            {t('post.add_image')}
+      </div>
+
+      <div className="mt-5 flex items-center justify-between border-t border-slate-50 pt-4 dark:border-slate-800/50">
+        <div className="flex items-center gap-1">
+          <label className="group flex cursor-pointer items-center gap-2 rounded-full px-4 py-2 text-sm font-bold text-slate-600 transition-all hover:bg-slate-50 dark:text-slate-400 dark:hover:bg-slate-800">
+            <ImagePlus className="h-5 w-5 text-blue-500 transition-transform group-hover:scale-110" />
+            <span className="hidden sm:inline">{t('post.add_image')}</span>
             <input
               type="file"
               className="hidden"
@@ -78,9 +106,9 @@ export function CreatePostCard() {
               onChange={(event) => setFile(event.target.files?.[0] ?? null)}
             />
           </label>
-          <label className="inline-flex cursor-pointer items-center gap-2 text-sm font-semibold text-slate-700 transition-colors hover:text-slate-950">
-            <Video className="h-5 w-5" />
-            {t('post.video')}
+          <label className="group flex cursor-pointer items-center gap-2 rounded-full px-4 py-2 text-sm font-bold text-slate-600 transition-all hover:bg-slate-50 dark:text-slate-400 dark:hover:bg-slate-800">
+            <Video className="h-5 w-5 text-purple-500 transition-transform group-hover:scale-110" />
+            <span className="hidden sm:inline">{t('post.video')}</span>
             <input
               type="file"
               className="hidden"
@@ -89,16 +117,22 @@ export function CreatePostCard() {
             />
           </label>
         </div>
+        
         <Button
           disabled={mutation.isPending || (!caption.trim() && !file)}
           onClick={() => mutation.mutate()}
-          className="h-10 rounded-lg bg-black px-5 text-sm font-semibold text-white hover:bg-slate-800"
+          className="h-10 rounded-full bg-slate-950 px-6 text-xs font-black uppercase tracking-widest text-white shadow-lg transition-all hover:bg-slate-800 hover:shadow-none dark:bg-white dark:text-slate-950 dark:hover:bg-slate-200"
         >
-          {t('post.post')} <Send className="h-4 w-4" />
+          {mutation.isPending ? t('common.saving') : t('post.post')}
+          <Send className="ml-2 h-3.5 w-3.5" />
         </Button>
       </div>
-      {mutation.isError && <p className="mt-2 text-sm text-red-600">{t('post.could_not_create')}</p>}
+
+      {mutation.isError && (
+        <p className="mt-3 px-2 text-[12px] font-bold text-red-500 italic">
+          {t('post.could_not_create')}
+        </p>
+      )}
     </Card>
   );
 }
-

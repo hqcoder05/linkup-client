@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Link, useParams, useNavigate } from 'react-router-dom';
-import { Image, Link as LinkIcon, Mail, MapPin, MoreHorizontal, Pencil, Camera } from 'lucide-react';
+import { Image, Link as LinkIcon, Mail, MapPin, MoreHorizontal, Pencil, Camera, LayoutGrid, PlaySquare } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { followApi } from '@/api/follow';
 import { profileApi } from '@/api/profile';
@@ -9,6 +9,7 @@ import { postsApi } from '@/api/posts';
 import { Avatar } from '@/components/common/Avatar';
 import { CreatePostCard } from '@/components/post/CreatePostCard';
 import { PostCard } from '@/components/post/PostCard';
+import { ProfilePostGrid } from '@/components/profile/ProfilePostGrid';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { useAuthStore } from '@/stores/authStore';
@@ -21,6 +22,7 @@ export function ProfilePage({ me = false }: { me?: boolean }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const params = useParams();
+  const [activeTab, setActiveTab] = useState<'posts' | 'media'>('posts');
   const [uploadError, setUploadError] = useState('');
   const currentUser = useAuthStore((state) => state.user);
   const token = useAuthStore((state) => state.accessToken);
@@ -145,13 +147,13 @@ export function ProfilePage({ me = false }: { me?: boolean }) {
 
   return (
     <div className="mx-auto max-w-[1080px] space-y-8">
-      <Card className="overflow-hidden rounded-xl border-none shadow-sm">
+      <Card className="overflow-hidden rounded-xl border-none shadow-sm dark:bg-black dark:border-white/10">
         <div className="relative group">
           <div className="h-52 bg-slate-900 sm:h-64 overflow-hidden">
             {user.coverUrl ? (
               <img src={user.coverUrl} className="w-full h-full object-cover" alt="Cover" />
             ) : (
-              <div className="w-full h-full bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900" />
+              <div className="w-full h-full bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 dark:from-neutral-900 dark:via-black dark:to-neutral-900" />
             )}
           </div>
           {me && (
@@ -180,7 +182,7 @@ export function ProfilePage({ me = false }: { me?: boolean }) {
         </div>
         <div className="flex flex-col gap-5 px-5 pb-6 sm:flex-row sm:items-end sm:justify-between sm:px-10">
           <div className="flex min-w-0 flex-col gap-4 sm:flex-row sm:items-end">
-            <div className="relative -mt-16 shrink-0 rounded-full bg-white p-1 shadow-xl group/avatar">
+            <div className="relative -mt-16 shrink-0 rounded-full bg-white dark:bg-black p-1 shadow-xl group/avatar">
               <Avatar user={user} size="xl" />
               {me && (
                 <label className="absolute inset-1 flex cursor-pointer items-center justify-center rounded-full bg-black/40 text-white opacity-0 transition-opacity group-hover/avatar:opacity-100">
@@ -206,8 +208,8 @@ export function ProfilePage({ me = false }: { me?: boolean }) {
               )}
             </div>
             <div className="min-w-0 pb-1">
-              <h1 className="truncate text-3xl font-bold tracking-tight text-slate-950">{displayName(user)}</h1>
-              <div className="mt-1 flex flex-wrap gap-x-5 gap-y-1 text-sm font-semibold text-slate-800">
+              <h1 className="truncate text-3xl font-bold tracking-tight text-slate-950 dark:text-white">{displayName(user)}</h1>
+              <div className="mt-1 flex flex-wrap gap-x-5 gap-y-1 text-sm font-semibold text-slate-800 dark:text-slate-400">
                 <span>{followersCount} Followers</span>
                 <span>{followingCount} Following</span>
               </div>
@@ -215,13 +217,13 @@ export function ProfilePage({ me = false }: { me?: boolean }) {
           </div>
           <div className="flex shrink-0 items-center gap-3 sm:pb-1">
             {me ? (
-              <Button className="rounded-full bg-black px-6 text-white hover:bg-slate-800" onClick={() => navigate('/settings')}>
+              <Button className="rounded-full bg-black dark:bg-white text-white dark:text-black px-6 hover:bg-slate-800 dark:hover:bg-slate-200" onClick={() => navigate('/settings')}>
                 <Pencil className="h-4 w-4" />
                 Edit
               </Button>
             ) : (
               <Button
-                className="rounded-full bg-black px-7 text-white hover:bg-slate-800"
+                className="rounded-full bg-black dark:bg-white text-white dark:text-black px-7 hover:bg-slate-800 dark:hover:bg-slate-200"
                 disabled={follow.isPending}
                 onClick={() => follow.mutate()}
               >
@@ -230,14 +232,14 @@ export function ProfilePage({ me = false }: { me?: boolean }) {
             )}
             <Link
               to="/chat"
-              className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-slate-300 bg-white text-slate-900 transition-colors hover:bg-slate-50"
+              className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-slate-300 dark:border-white/10 bg-white dark:bg-black text-slate-900 dark:text-white transition-colors hover:bg-slate-50 dark:hover:bg-white/5"
               aria-label="Message"
             >
               <Mail className="h-5 w-5" />
             </Link>
             <button
               type="button"
-              className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-slate-300 bg-white text-slate-900 transition-colors hover:bg-slate-50"
+              className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-slate-300 dark:border-white/10 bg-white dark:bg-black text-slate-900 dark:text-white transition-colors hover:bg-slate-50 dark:hover:bg-white/5"
               aria-label="More actions"
             >
               <MoreHorizontal className="h-5 w-5" />
@@ -246,25 +248,25 @@ export function ProfilePage({ me = false }: { me?: boolean }) {
         </div>
       </Card>
       {(uploadError || avatarMutation.isError || coverMutation.isError) && (
-        <Card className="border-red-200 bg-red-50 p-4 text-sm text-red-700">
+        <Card className="border-red-200 bg-red-50 dark:bg-red-900/10 dark:border-red-900/20 p-4 text-sm text-red-700 dark:text-red-400">
           {uploadError || apiMessage(avatarMutation.error ?? coverMutation.error, t('post.could_not_create'))}
         </Card>
       )}
 
       {me && myProfile.isError && (
-        <Card className="border-amber-200 bg-amber-50 p-4 text-sm text-amber-800">
+        <Card className="border-amber-200 bg-amber-50 dark:bg-amber-900/10 dark:border-amber-900/20 p-4 text-sm text-amber-800 dark:text-amber-400">
           {t('profile.details_unavailable')}
         </Card>
       )}
 
       <div className="grid items-start gap-6 lg:grid-cols-[240px_minmax(0,1fr)_250px]">
         <aside className="space-y-6">
-          <Card className="rounded-xl p-5">
+          <Card className="rounded-xl p-5 dark:bg-black dark:border-white/10 shadow-sm">
             <h2 className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">{t('profile.about')}</h2>
-            <p className="mt-4 whitespace-pre-line text-sm leading-6 text-slate-800">
+            <p className="mt-4 whitespace-pre-line text-sm leading-6 text-slate-800 dark:text-slate-300">
               {profile?.bio || profile?.headline || t('profile.no_bio')}
             </p>
-            <div className="mt-5 border-t border-slate-100 pt-4 text-sm text-slate-700">
+            <div className="mt-5 border-t border-slate-100 dark:border-white/5 pt-4 text-sm text-slate-700 dark:text-slate-400">
               {profile?.location && (
                 <div className="mb-3 flex items-center gap-2">
                   <MapPin className="h-4 w-4" />
@@ -272,7 +274,7 @@ export function ProfilePage({ me = false }: { me?: boolean }) {
                 </div>
               )}
               {profile?.websiteUrl && (
-                <a className="flex items-center gap-2 hover:text-slate-950" href={profile.websiteUrl}>
+                <a className="flex items-center gap-2 hover:text-slate-950 dark:hover:text-white" href={profile.websiteUrl}>
                   <LinkIcon className="h-4 w-4" />
                   {profile.websiteUrl.replace(/^https?:\/\//, '')}
                 </a>
@@ -280,15 +282,20 @@ export function ProfilePage({ me = false }: { me?: boolean }) {
             </div>
           </Card>
 
-          <Card className="rounded-xl p-5">
+          <Card className="rounded-xl p-5 dark:bg-black dark:border-white/10 shadow-sm">
             <div className="flex items-center justify-between">
               <h2 className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">{t('profile.gallery')}</h2>
-              <span className="text-xs font-semibold text-slate-700">{t('common.see_all')}</span>
+              <button 
+                onClick={() => setActiveTab('media')}
+                className="text-xs font-bold text-blue-600 hover:text-blue-700 dark:text-blue-400"
+              >
+                {t('common.see_all')}
+              </button>
             </div>
             {gallery.length > 0 ? (
               <div className="mt-4 grid grid-cols-3 gap-1.5">
                 {gallery.map((item) => (
-                  <div key={item.id} className="aspect-square overflow-hidden rounded-md bg-slate-100">
+                  <div key={item.id} className="aspect-square overflow-hidden rounded-md bg-slate-100 dark:bg-neutral-900">
                     {item.type?.startsWith('video') ? (
                       <video src={item.url} className="h-full w-full object-cover" muted />
                     ) : (
@@ -298,7 +305,7 @@ export function ProfilePage({ me = false }: { me?: boolean }) {
                 ))}
               </div>
             ) : (
-              <div className="mt-4 flex h-28 items-center justify-center rounded-lg bg-slate-100 text-slate-400">
+              <div className="mt-4 flex h-28 items-center justify-center rounded-lg bg-slate-100 dark:bg-neutral-900 text-slate-400">
                 <Image className="h-7 w-7" />
               </div>
             )}
@@ -306,58 +313,91 @@ export function ProfilePage({ me = false }: { me?: boolean }) {
         </aside>
 
         <section className="space-y-6">
-          {me && <CreatePostCard />}
-          {posts.isLoading && <Card className="p-5 text-sm text-slate-500">{t('profile.loading_posts')}</Card>}
-          {postsForbidden && (
-            <Card className="rounded-xl p-8 text-center text-sm text-slate-500">
-              {t('profile.private_content')}
-            </Card>
+          <div className="flex border-b border-slate-100 dark:border-white/5">
+            <button
+              onClick={() => setActiveTab('posts')}
+              className={`flex items-center gap-2 px-6 py-4 text-xs font-black uppercase tracking-widest transition-all ${
+                activeTab === 'posts' 
+                  ? 'border-b-2 border-black dark:border-white text-slate-950 dark:text-white' 
+                  : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-200'
+              }`}
+            >
+              <LayoutGrid className="h-4 w-4" />
+              {t('profile.tab_posts')}
+            </button>
+            <button
+              onClick={() => setActiveTab('media')}
+              className={`flex items-center gap-2 px-6 py-4 text-xs font-black uppercase tracking-widest transition-all ${
+                activeTab === 'media' 
+                  ? 'border-b-2 border-black dark:border-white text-slate-950 dark:text-white' 
+                  : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-200'
+              }`}
+            >
+              <PlaySquare className="h-4 w-4" />
+              {t('profile.tab_media')}
+            </button>
+          </div>
+
+          {activeTab === 'posts' ? (
+            <div className="space-y-6">
+              {me && <CreatePostCard />}
+              {posts.isLoading && <Card className="p-10 text-center text-xs font-bold text-slate-400 italic dark:bg-black dark:border-white/10">{t('profile.loading_posts')}</Card>}
+              {postsForbidden && (
+                <Card className="rounded-xl p-12 text-center text-sm font-medium text-slate-500 dark:bg-black dark:border-white/10">
+                  {t('profile.private_content')}
+                </Card>
+              )}
+              {posts.data?.length === 0 && !posts.isLoading && (
+                <Card className="rounded-xl p-12 text-center text-sm font-medium text-slate-500 dark:bg-black dark:border-white/10">{t('profile.no_posts')}</Card>
+              )}
+              {!postsForbidden && posts.data?.map((post) => <PostCard key={post.id} post={post} />)}
+            </div>
+          ) : (
+            <div className="rounded-2xl overflow-hidden border border-slate-100 dark:border-white/5 bg-white dark:bg-black">
+              <ProfilePostGrid posts={posts.data?.filter(p => p.media && p.media.length > 0) ?? []} />
+            </div>
           )}
-          {posts.data?.length === 0 && (
-            <Card className="rounded-xl p-8 text-center text-sm text-slate-500">{t('profile.no_posts')}</Card>
-          )}
-          {!postsForbidden && posts.data?.map((post) => <PostCard key={post.id} post={post} />)}
         </section>
 
         <aside className="space-y-6">
-          <Card className="rounded-xl p-5">
+          <Card className="rounded-xl p-5 dark:bg-black dark:border-white/10 shadow-sm">
             <div className="flex items-center justify-between">
               <h2 className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">{t('common.followers')}</h2>
-              <Link to="/connections/followers" className="text-xs font-semibold text-slate-700 hover:text-slate-950">
+              <Link to="/connections/followers" className="text-xs font-semibold text-slate-700 hover:text-slate-950 dark:text-slate-400 dark:hover:text-white">
                 {t('common.see_all')}
               </Link>
             </div>
             <div className="mt-4 flex -space-x-2">
               {followerPreview.map((item) => (
-                <Link key={item.id} to={`/profile/${item.id}`} className="rounded-full bg-white p-0.5">
+                <Link key={item.id} to={`/profile/${item.id}`} className="rounded-full bg-white dark:bg-black p-0.5">
                   <Avatar user={item} size="md" />
                 </Link>
               ))}
-              {followerPreview.length === 0 && <p className="text-sm text-slate-500">{t('profile.no_followers')}</p>}
+              {followerPreview.length === 0 && <p className="text-sm text-slate-500 italic">{t('profile.no_followers')}</p>}
             </div>
           </Card>
 
-          <Card className="rounded-xl p-5">
+          <Card className="rounded-xl p-5 dark:bg-black dark:border-white/10 shadow-sm">
             <h2 className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">{t('common.following')}</h2>
             <div className="mt-4 space-y-4">
               {followingPreview.map((item) => (
                 <Link key={item.id} to={`/profile/${item.id}`} className="flex items-center gap-3">
                   <Avatar user={item} size="sm" />
                   <div className="min-w-0">
-                    <div className="truncate text-sm font-semibold text-slate-900">{displayName(item)}</div>
-                    <div className="text-xs text-slate-500">{t('common.following')}</div>
+                    <div className="truncate text-sm font-semibold text-slate-900 dark:text-white">{displayName(item)}</div>
+                    <div className="text-xs text-slate-500 dark:text-slate-400">{t('common.following')}</div>
                   </div>
                 </Link>
               ))}
-              {followingPreview.length === 0 && <p className="text-sm text-slate-500">{t('profile.not_following')}</p>}
+              {followingPreview.length === 0 && <p className="text-sm text-slate-500 italic">{t('profile.not_following')}</p>}
             </div>
           </Card>
 
           {tags.length > 0 && (
-            <Card className="rounded-xl p-5">
+            <Card className="rounded-xl p-5 dark:bg-black dark:border-white/10 shadow-sm">
               <div className="flex flex-wrap gap-2">
                 {tags.map((tag) => (
-                  <span key={tag} className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700">
+                  <span key={tag} className="rounded-full bg-slate-100 dark:bg-neutral-900 px-3 py-1 text-xs font-semibold text-slate-700 dark:text-slate-400">
                     #{tag}
                   </span>
                 ))}
@@ -369,4 +409,3 @@ export function ProfilePage({ me = false }: { me?: boolean }) {
     </div>
   );
 }
-

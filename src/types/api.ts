@@ -201,6 +201,52 @@ export type MessageDto = {
   mine: boolean;
 };
 
+export type CallSignalEvent = 'invite' | 'offer' | 'answer' | 'ice' | 'reject' | 'end';
+
+export type CallSignalDto = {
+  event: CallSignalEvent;
+  callId: string;
+  conversationId: number;
+  senderId: number;
+  receiverId: number;
+  callType: 'audio' | 'video' | string | null;
+  sdp: string | null;
+  candidate: string | null;
+  sender: UserDto;
+  createdAt: string;
+};
+
+export type CallInvitePayload = {
+  callId?: string;
+  conversationId: number;
+  callerId: number;
+  receiverId: number;
+  callType: 'audio' | 'video';
+};
+
+export type CallDescriptionPayload = {
+  callId: string;
+  conversationId: number;
+  senderId: number;
+  receiverId: number;
+  sdp: string;
+};
+
+export type CallIcePayload = {
+  callId: string;
+  conversationId: number;
+  senderId: number;
+  receiverId: number;
+  candidate: string;
+};
+
+export type CallStatePayload = {
+  callId: string;
+  conversationId: number;
+  senderId: number;
+  receiverId: number;
+};
+
 export type AccountSettingsDto = {
   phoneNumber: string | null;
   dateOfBirth: string | null;

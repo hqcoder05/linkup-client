@@ -13,10 +13,15 @@ export default {
           700: '#074b90',
         },
         ink: '#1f2937',
+        surface: {
+          light: '#ffffff',
+          dark: '#000000', // Pure black
+          muted: '#16181c', // Deep neutral gray
+        }
       },
       boxShadow: {
-        card: '0 1px 2px rgba(15, 23, 42, 0.08)',
-        lift: '0 8px 24px rgba(15, 23, 42, 0.10)',
+        card: '0 1px 3px rgba(0, 0, 0, 0.05)',
+        lift: '0 10px 40px rgba(0, 0, 0, 0.15)',
       },
     },
   },
