@@ -9,7 +9,7 @@ import { chatApi } from '@/api/chat';
 import { postsApi } from '@/api/posts';
 import { createChatClient, subscribeToConversation } from '@/websocket/chatSocket';
 import type { ConversationDto, MessageDto, UserDto } from '@/types/api';
-import { isMessageMine } from '@/utils/chat';
+import { isMessageMine, mergeMessagesChronologically } from '@/utils/chat';
 import { displayName } from '@/utils/format';
 
 export function ChatWindow({ conversation, currentUser }: { conversation?: ConversationDto; currentUser: UserDto | null }) {
@@ -64,8 +64,7 @@ export function ChatWindow({ conversation, currentUser }: { conversation?: Conve
   }, [conversation, queryClient]);
 
   const allMessages = useMemo(() => {
-    const combined = [...(messages.data ?? []).reverse(), ...liveMessages];
-    return combined.filter((message, index, list) => list.findIndex((item) => item.id === message.id) === index);
+    return mergeMessagesChronologically(messages.data, liveMessages);
   }, [liveMessages, messages.data]);
 
   useEffect(() => {

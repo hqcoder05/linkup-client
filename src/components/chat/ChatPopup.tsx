@@ -9,7 +9,7 @@ import { chatApi } from '@/api/chat';
 import { postsApi } from '@/api/posts';
 import { createChatClient, subscribeToConversation } from '@/websocket/chatSocket';
 import type { ConversationDto, MessageDto, UserDto } from '@/types/api';
-import { isMessageMine } from '@/utils/chat';
+import { isMessageMine, mergeMessagesChronologically } from '@/utils/chat';
 import { displayName } from '@/utils/format';
 
 type ChatPopupProps = {
@@ -76,8 +76,7 @@ export function ChatPopup({ conversation, currentUser, onClose }: ChatPopupProps
   }, [conversation.id, queryClient]);
 
   const allMessages = useMemo(() => {
-    const combined = [...(messages.data ?? []).reverse(), ...liveMessages];
-    return combined.filter((message, index, list) => list.findIndex((item) => item.id === message.id) === index);
+    return mergeMessagesChronologically(messages.data, liveMessages);
   }, [liveMessages, messages.data]);
 
   useEffect(() => {
