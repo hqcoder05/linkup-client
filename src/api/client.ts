@@ -1,4 +1,5 @@
 import axios, { AxiosError, type InternalAxiosRequestConfig } from 'axios';
+import { API_BASE_URL } from '@/config/env';
 import { useAuthStore } from '@/stores/authStore';
 import type { ApiResponse, AuthResponse } from '@/types/api';
 
@@ -28,7 +29,7 @@ function refreshSession(refreshToken: string) {
   if (!refreshPromise) {
     refreshPromise = axios
       .post<ApiResponse<AuthResponse>>(
-        `${import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8080/api'}/auth/refresh`,
+        `${API_BASE_URL}/auth/refresh`,
         { refreshToken },
       )
       .then((response) => {
@@ -47,7 +48,7 @@ function refreshSession(refreshToken: string) {
 }
 
 export const apiClient = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8080/api',
+  baseURL: API_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
   },

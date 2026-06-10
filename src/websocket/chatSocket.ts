@@ -1,10 +1,11 @@
 import { Client } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
+import { WS_URL } from '@/config/env';
 import type { MessageDto, NotificationDto } from '@/types/api';
 
 export function createChatClient(onConnect?: () => void) {
   return new Client({
-    webSocketFactory: () => new SockJS(import.meta.env.VITE_WS_URL ?? 'http://localhost:8080/ws'),
+    webSocketFactory: () => new SockJS(WS_URL),
     reconnectDelay: 3000,
     onConnect,
   });
