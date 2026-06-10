@@ -10,11 +10,11 @@ export type UserDto = {
   email: string;
   fullName: string;
   avatarUrl: string | null;
+  coverUrl: string | null;
   privateAccount: boolean;
+  following?: boolean;
+  followedByCurrentUser: boolean;
   role: string;
-  followersCount?: number;
-  followingCount?: number;
-  followedByCurrentUser?: boolean;
   createdAt: string;
 };
 
@@ -35,7 +35,6 @@ export type ProfileDto = {
   postsCount: number;
   followersCount: number;
   followingCount: number;
-  followedByCurrentUser?: boolean;
   createdAt: string;
   updatedAt: string;
 };
@@ -48,6 +47,8 @@ export type UpdateProfileRequest = {
   location?: string;
   websiteUrl?: string;
   privateAccount?: boolean;
+  avatarUrl?: string;
+  coverUrl?: string;
 };
 
 export type PostDto = {
@@ -60,6 +61,7 @@ export type PostDto = {
   likesCount: number;
   commentsCount: number;
   likedByCurrentUser: boolean;
+  savedByCurrentUser: boolean;
   createdAt: string;
   updatedAt: string;
 };
@@ -87,6 +89,34 @@ export type PostMediaRequest = {
   type?: string;
   width?: number | null;
   height?: number | null;
+};
+
+export type StoryMediaRequest = PostMediaRequest;
+
+export type CreateStoryRequest = {
+  caption?: string;
+  media?: StoryMediaRequest[];
+};
+
+export type StoryDto = {
+  id: number;
+  user: UserDto;
+  caption: string | null;
+  media: PostMediaDto[];
+  createdAt: string;
+  expiresAt: string;
+};
+
+export type StoryViewDto = {
+  user: UserDto;
+  viewedAt: string;
+};
+
+export type UserStoriesDto = {
+  user: UserDto;
+  stories: StoryDto[];
+  hasUnseen: boolean;
+  latestStoryTime: string;
 };
 
 export type CommentDto = {
@@ -119,12 +149,27 @@ export type FollowDto = {
   approvedAt: string | null;
 };
 
+export type SuggestionDto = {
+  user: UserDto;
+  mutualCount: number;
+  mutualFriendNames: string[];
+};
+
+export type TrendingHashtagDto = {
+  name: string;
+  usageCount: number;
+  trendScore: number;
+};
+
 export type NotificationDto = {
   id: number;
   type: string;
   title: string;
   content: string;
   url: string | null;
+  targetId: string | null;
+  lastInteractorId: number | null;
+  interactionCount: number;
   read: boolean;
   createdAt: string;
 };
@@ -145,9 +190,50 @@ export type MessageDto = {
   sender: UserDto;
   content: string | null;
   attachmentUrl: string | null;
+  sharedPostId: number | null;
+  sharedStoryId: number | null;
+  disappearing: boolean;
+  expiresAt: string | null;
   createdAt: string;
   deleted: boolean;
   read: boolean;
   readAt: string | null;
   mine: boolean;
 };
+
+export type AccountSettingsDto = {
+  phoneNumber: string | null;
+  dateOfBirth: string | null;
+  emailNotificationsEnabled: boolean;
+  pushNotificationsEnabled: boolean;
+  autoplayVideoEnabled: boolean;
+  contentVisibleToPublic: boolean;
+  searchIndexingEnabled: boolean;
+  twoFactorEnabled: boolean;
+  active: boolean;
+  deactivatedAt: string | null;
+};
+
+export type UpdateAccountSettingsRequest = {
+  phoneNumber?: string | null;
+  dateOfBirth?: string | null;
+  emailNotificationsEnabled?: boolean;
+  pushNotificationsEnabled?: boolean;
+  autoplayVideoEnabled?: boolean;
+  contentVisibleToPublic?: boolean;
+  searchIndexingEnabled?: boolean;
+  twoFactorEnabled?: boolean;
+};
+
+export type ChangePasswordRequest = {
+  currentPassword: string;
+  newPassword: string;
+};
+
+export type SessionDto = {
+  id: number;
+  createdAt: string;
+  expiresAt: string;
+  current: boolean;
+};
+

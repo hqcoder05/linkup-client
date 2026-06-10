@@ -6,6 +6,7 @@ import { Card } from '@/components/ui/Card';
 import { profileApi } from '@/api/profile';
 import type { FollowStatus, ProfileDto, UserDto } from '@/types/api';
 import { displayName, formatDate } from '@/utils/format';
+import { useAuthStore } from '@/stores/authStore';
 
 type ProfileHeaderProps = {
   profile?: ProfileDto;
@@ -33,9 +34,17 @@ export function ProfileHeader({
   onToggleFollow,
 }: ProfileHeaderProps) {
   const queryClient = useQueryClient();
+  const sessionUser = useAuthStore((state) => state.user);
+  const setUser = useAuthStore((state) => state.setUser);
   const avatarMutation = useMutation({
     mutationFn: profileApi.uploadAvatar,
-    onSuccess: () => {
+    onSuccess: (media) => {
+      if (sessionUser) {
+        setUser({ ...sessionUser, avatarUrl: media.url });
+      }
+      queryClient.setQueryData<ProfileDto>(['profile', 'me'], (old) =>
+        old ? { ...old, user: { ...old.user, avatarUrl: media.url } } : old,
+      );
       void queryClient.invalidateQueries({ queryKey: ['profile'] });
       void queryClient.invalidateQueries({ queryKey: ['auth-me'] });
     },
@@ -59,6 +68,7 @@ export function ProfileHeader({
                 onChange={(event) => {
                   const file = event.target.files?.[0];
                   if (file) avatarMutation.mutate(file);
+                  event.target.value = '';
                 }}
               />
             </label>

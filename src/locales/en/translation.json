@@ -1,8 +1,9 @@
-{
+﻿{
   "common": {
     "about": "About",
     "accessibility": "Accessibility",
     "account": "Account",
+    "cancel": "Cancel",
     "cancel_changes": "Cancel Changes",
     "comments": "comments",
     "configure": "Configure",
@@ -12,6 +13,7 @@
     "followers": "Followers",
     "following": "Following",
     "joined": "Joined",
+    "language": "Language",
     "login": "Login",
     "logout": "Logout",
     "messages": "Messages",
@@ -20,6 +22,7 @@
     "profile": "Profile",
     "register": "Register",
     "save_changes": "Save Changes",
+    "save": "Save",
     "saving": "Saving...",
     "security": "Security",
     "see_all": "See all",
@@ -64,19 +67,19 @@
     "error_failed": "Registration failed"
   },
   "home": {
-    "title": "LinkUp helps people share work, discover peers, and keep the conversation moving.",
-    "subtitle": "A modern React version of the original social flow: feed, profiles, followers, notifications, and realtime chat.",
+    "title": "LinkUp helps you connect with friends, share moments, and discover the world around you.",
+    "subtitle": "A modern social experience: lively feed, personal profiles, friend connections, and real-time chat.",
     "join_btn": "Join LinkUp",
     "open_feed_btn": "Open feed",
     "features": {
       "feed": "Feed",
-      "feed_text": "Stay updated with curated industry insights and professional updates.",
+      "feed_text": "Stay updated with the latest stories from your friends and community.",
       "follow": "Follow",
-      "follow_text": "Follow industry professionals and track their latest updates.",
+      "follow_text": "Follow interesting people and keep up with their latest updates.",
       "profiles": "Profiles",
-      "profiles_text": "Showcase your career milestones in a clean, minimalist portfolio.",
+      "profiles_text": "Create your personal profile and express your true self.",
       "messages": "Messages",
-      "messages_text": "Communicate securely with real-time professional chat."
+      "messages_text": "Chat privately and securely with your friends anytime, anywhere."
     }
   },
   "feed": {
@@ -91,7 +94,13 @@
     "search_messages": "Search messages",
     "loading_conversations": "Loading conversations...",
     "no_conversations": "No conversations yet.",
-    "conversations_unavailable": "Conversations are unavailable."
+    "conversations_unavailable": "Conversations are unavailable.",
+    "loading_contacts": "Loading contacts...",
+    "no_contacts": "Follow people to see contacts here.",
+    "no_contact_results": "No contacts match your search.",
+    "contacts_unavailable": "Contacts are unavailable.",
+    "trending": "Trending",
+    "no_trending": "No trending hashtags yet."
   },
   "post": {
     "share_update": "Share an update with your network...",
@@ -102,8 +111,51 @@
     "like": "Like",
     "comment": "Comment",
     "delete_post": "Delete post",
+    "edit_post": "Edit post",
+    "save": "Save",
+    "saved": "Saved",
     "no_comments": "No comments yet.",
     "write_comment": "Write a comment..."
+  },
+  "stories": {
+    "create": "Create story",
+    "uploading": "Uploading...",
+    "loading": "Loading stories...",
+    "empty": "No stories yet.",
+    "unavailable": "Stories are unavailable.",
+    "viewers": "Viewers",
+    "no_viewers": "No viewers yet."
+  },
+  "saved": {
+    "title": "Saved",
+    "subtitle": "Posts you saved for later.",
+    "loading": "Loading saved posts...",
+    "empty": "No saved posts",
+    "empty_body": "Save posts to find them here."
+  },
+  "explore": {
+    "title": "Explore",
+    "subtitle": "Discover public posts and trending conversations across LinkUp.",
+    "loading": "Loading explore posts...",
+    "empty": "No explore posts yet"
+  },
+  "post_detail": {
+    "loading": "Loading post...",
+    "unavailable": "This post is unavailable."
+  },
+  "search": {
+    "title": "Search",
+    "results_for": "Results for \"{{keyword}}\"",
+    "empty_query": "Enter a keyword from the search bar.",
+    "posts": "Posts",
+    "people": "People",
+    "no_posts": "No posts found",
+    "no_people": "No people found"
+  },
+  "hashtag": {
+    "subtitle": "Posts using this hashtag.",
+    "loading": "Loading hashtag posts...",
+    "empty": "No posts for this hashtag"
   },
   "profile": {
     "unavailable_title": "Profile unavailable",
@@ -116,18 +168,24 @@
     "no_followers": "No followers yet.",
     "not_following": "Not following anyone yet.",
     "loading_posts": "Loading posts...",
-    "no_posts": "No posts to show."
+    "no_posts": "No posts to show.",
+    "private_content": "You do not have permission to view this content, or this account is private."
   },
   "settings": {
     "title": "Account Settings",
     "subtitle": "Manage your personal information and account preferences.",
     "section_title": "{{section}} Settings",
     "section_pending": "This section is ready for backend preferences when those APIs are available.",
+    "notifications_subtitle": "Choose how LinkUp notifies you about activity.",
+    "privacy_subtitle": "Control profile visibility, personal account details, and playback behavior.",
+    "security_subtitle": "Manage password, sessions, and security preferences.",
+    "support_subtitle": "Support tools will be connected when backend support APIs are available.",
     "profile_load_error": "Profile details could not be loaded from the backend.",
     "personalize": "Personalize LinkUp",
     "personalize_text": "Custom themes and exclusive features for your profile.",
     "go_premium": "Go Premium",
     "profile_information": "Profile Information",
+    "change_cover": "Change cover",
     "display_name": "Display Name",
     "bio": "Bio",
     "bio_placeholder": "Write a short professional introduction.",
@@ -142,15 +200,19 @@
     "account_preferences": "Account Preferences",
     "language_body": "Default language for your interface.",
     "content_visibility": "Content Visibility",
-    "content_visibility_body": "Allow search engines to index your profile.",
+    "content_visibility_body": "Allow your content to be visible publicly where backend rules permit it.",
+    "search_indexing": "Search Indexing",
+    "search_indexing_body": "Allow search engines to index your profile.",
     "autoplay_videos": "Autoplay Videos",
     "autoplay_videos_body": "Play feed videos automatically on scroll.",
     "private_account": "Private Account",
     "private_account_body": "Approve followers before they can follow your updates.",
     "danger_zone": "Danger Zone",
-    "danger_body": "Account deactivation and deletion APIs are not available yet.",
+    "danger_body": "Deactivate your account and revoke active refresh sessions.",
     "manage_account": "Manage Account",
+    "deactivate_confirm": "Deactivate this account? You will be signed out immediately.",
     "could_not_save": "Could not save settings.",
+    "notification_preferences": "Notification Preferences",
     "mock_notifications_title": "Notification Preferences",
     "email_notifications": "Email Notifications",
     "email_notifications_body": "Receive updates about follows, messages, and comments.",
@@ -158,24 +220,50 @@
     "push_notifications_body": "Show realtime notifications while browsing LinkUp.",
     "privacy_controls": "Privacy Controls",
     "security_title": "Security",
+    "password_title": "Password",
+    "change_password": "Change Password",
+    "current_password": "Current Password",
+    "new_password": "New Password",
+    "confirm_password": "Confirm Password",
+    "password_mismatch": "New password and confirmation do not match.",
+    "two_factor": "Two-factor authentication",
+    "two_factor_body": "Store the two-factor preference for your account.",
+    "active_sessions": "Active Sessions",
+    "current_session": "Current session",
+    "session": "Session",
+    "session_dates": "Created {{created}} · Expires {{expires}}",
+    "revoke_session": "Revoke",
+    "loading_sessions": "Loading sessions...",
+    "no_sessions": "No active sessions.",
+    "sessions_unavailable": "Could not load active sessions.",
     "support_title": "Support",
+    "support_pending_body": "The backend does not expose help center, report, or ticket APIs yet, so this tab is intentionally informational only.",
+    "backend_unavailable_body": "This area is intentionally not editable yet because the backend does not expose a matching settings API. It will be connected once the corresponding endpoints are added.",
     "footer_brand": "LinkUp Professional",
     "footer_rights": "© 2024 LinkUp Professional. All rights reserved."
   },
   "connections": {
+    "network_label": "Network",
     "find_people": "Find people",
     "find_people_body": "Search by name or email, then follow professionals you want to track.",
     "search_placeholder": "Name or email",
     "search_results": "Search results",
+    "result_count": "{{count}} results",
     "enter_keyword": "Enter a keyword to start searching.",
     "follow_requests": "Follow requests",
+    "requests_short": "Requests",
     "approve": "Approve",
     "decline": "Decline",
     "no_pending": "No pending requests.",
     "no_followers": "No followers yet.",
     "people_you_follow": "{{count}} people you follow.",
     "loading_list": "Loading {{title}}...",
-    "empty_following": "You are not following anyone yet."
+    "empty_following": "You are not following anyone yet.",
+    "suggestions": "Suggested for you",
+    "suggested_reason": "Suggested by LinkUp",
+    "loading_people": "Loading people...",
+    "mutuals": "{{count}} mutual connections",
+    "no_suggestions": "No suggestions yet."
   },
   "chat": {
     "messages_unavailable": "Messages unavailable",
@@ -187,11 +275,30 @@
     "messages_unavailable_short": "Messages are unavailable.",
     "type_message": "Type a message...",
     "search_conversations": "Search conversations...",
-    "no_messages": "No messages yet"
+    "no_messages": "No messages yet",
+    "all_messages": "All Messages",
+    "groups": "Groups",
+    "archive": "Archive",
+    "no_archived": "No archived conversations.",
+    "you_sent": "You sent",
+    "available": "Available",
+    "member_count": "{{count}} members",
+    "call": "Call",
+    "video_call": "Video call",
+    "conversation_info": "Conversation info",
+    "today": "Today",
+    "attach": "Attach file",
+    "emoji": "Emoji",
+    "enter_hint": "Press Enter to send, Shift + Enter for new line"
   },
   "notifications": {
     "title": "Notifications",
     "unread": "{{count}} unread",
-    "empty": "No notifications yet."
+    "empty": "No notifications yet.",
+    "loading": "Loading notifications...",
+    "unavailable": "Notifications are unavailable.",
+    "mark_all_read": "Mark all as read",
+    "view_all": "View all notifications"
   }
 }
+

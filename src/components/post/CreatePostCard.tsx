@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { Avatar } from '@/components/common/Avatar';
 import { useAuthStore } from '@/stores/authStore';
+import type { PostMediaRequest } from '@/types/api';
 
 export function CreatePostCard() {
   const { t } = useTranslation();
@@ -17,16 +18,24 @@ export function CreatePostCard() {
 
   const mutation = useMutation({
     mutationFn: async () => {
-      const mediaItems = [];
+      const mediaItems: PostMediaRequest[] = [];
+      const uploadedMediaIds: number[] = [];
       if (file) {
-        const media = await postsApi.uploadImage(file);
-        mediaItems.push({
-          url: media.url,
-          thumbnailUrl: media.thumbnailUrl,
-          type: media.type || 'image',
-          width: null,
-          height: null,
-        });
+        const media = file.type.startsWith('video/') ? await postsApi.uploadVideo(file) : await postsApi.uploadImage(file);
+        uploadedMediaIds.push(media.id);
+        try {
+          mediaItems.push({
+            url: media.url,
+            thumbnailUrl: media.thumbnailUrl,
+            type: media.type || 'image',
+            width: null,
+            height: null,
+          });
+          return await postsApi.create({ caption, media: mediaItems });
+        } catch (error) {
+          await Promise.allSettled(uploadedMediaIds.map((id) => postsApi.deleteMedia(id)));
+          throw error;
+        }
       }
       return postsApi.create({ caption, media: mediaItems });
     },
@@ -92,3 +101,4 @@ export function CreatePostCard() {
     </Card>
   );
 }
+

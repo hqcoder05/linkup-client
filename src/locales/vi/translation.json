@@ -1,8 +1,9 @@
-{
+﻿{
   "common": {
     "about": "Giới thiệu",
     "accessibility": "Trợ năng",
     "account": "Tài khoản",
+    "cancel": "Hủy",
     "cancel_changes": "Hủy thay đổi",
     "comments": "bình luận",
     "configure": "Cấu hình",
@@ -12,6 +13,7 @@
     "followers": "Người theo dõi",
     "following": "Đang theo dõi",
     "joined": "Tham gia",
+    "language": "Ngôn ngữ",
     "login": "Đăng nhập",
     "logout": "Đăng xuất",
     "messages": "Tin nhắn",
@@ -20,6 +22,7 @@
     "profile": "Hồ sơ",
     "register": "Đăng ký",
     "save_changes": "Lưu thay đổi",
+    "save": "Lưu",
     "saving": "Đang lưu...",
     "security": "Bảo mật",
     "see_all": "Xem tất cả",
@@ -64,19 +67,19 @@
     "error_failed": "Đăng ký thất bại"
   },
   "home": {
-    "title": "LinkUp giúp mọi người chia sẻ công việc, tìm đồng nghiệp và duy trì kết nối.",
-    "subtitle": "Phiên bản React hiện đại của luồng mạng xã hội gốc: bảng tin, hồ sơ, theo dõi, thông báo và chat thời gian thực.",
+    "title": "LinkUp giúp bạn kết nối với bạn bè, chia sẻ những khoảnh khắc và khám phá thế giới xung quanh.",
+    "subtitle": "Khám phá không gian mạng xã hội hiện đại: bảng tin sôi động, hồ sơ cá nhân, kết nối bạn bè và trò chuyện thời gian thực.",
     "join_btn": "Tham gia LinkUp",
     "open_feed_btn": "Mở bảng tin",
     "features": {
       "feed": "Bảng tin",
-      "feed_text": "Cập nhật insight ngành nghề và chia sẻ chuyên nghiệp.",
+      "feed_text": "Cập nhật những tin tức mới nhất từ bạn bè và cộng đồng.",
       "follow": "Theo dõi",
-      "follow_text": "Theo dõi chuyên gia và cập nhật mới nhất từ họ.",
+      "follow_text": "Kết nối và theo dõi những người bạn quan tâm.",
       "profiles": "Hồ sơ",
-      "profiles_text": "Thể hiện cột mốc nghề nghiệp trong hồ sơ gọn gàng.",
+      "profiles_text": "Tạo hồ sơ cá nhân ấn tượng và chia sẻ cá tính của bạn.",
       "messages": "Tin nhắn",
-      "messages_text": "Trao đổi bảo mật bằng chat chuyên nghiệp thời gian thực."
+      "messages_text": "Trò chuyện trực tiếp và riêng tư với bạn bè mọi lúc mọi nơi."
     }
   },
   "feed": {
@@ -91,7 +94,13 @@
     "search_messages": "Tìm tin nhắn",
     "loading_conversations": "Đang tải cuộc trò chuyện...",
     "no_conversations": "Chưa có cuộc trò chuyện.",
-    "conversations_unavailable": "Không thể tải cuộc trò chuyện."
+    "conversations_unavailable": "Không thể tải cuộc trò chuyện.",
+    "loading_contacts": "Đang tải liên hệ...",
+    "no_contacts": "Theo dõi người khác để thấy liên hệ tại đây.",
+    "no_contact_results": "Không có liên hệ phù hợp.",
+    "contacts_unavailable": "Không thể tải liên hệ.",
+    "trending": "Xu hướng",
+    "no_trending": "Chưa có hashtag xu hướng."
   },
   "post": {
     "share_update": "Chia sẻ cập nhật với mạng lưới của bạn...",
@@ -102,8 +111,51 @@
     "like": "Thích",
     "comment": "Bình luận",
     "delete_post": "Xóa bài viết",
+    "edit_post": "Sửa bài viết",
+    "save": "Lưu",
+    "saved": "Đã lưu",
     "no_comments": "Chưa có bình luận.",
     "write_comment": "Viết bình luận..."
+  },
+  "stories": {
+    "create": "Tạo tin",
+    "uploading": "Đang tải lên...",
+    "loading": "Đang tải tin...",
+    "empty": "Chưa có tin.",
+    "unavailable": "Không thể tải tin.",
+    "viewers": "Người xem",
+    "no_viewers": "Chưa có người xem."
+  },
+  "saved": {
+    "title": "Đã lưu",
+    "subtitle": "Các bài viết bạn lưu để xem lại.",
+    "loading": "Đang tải bài viết đã lưu...",
+    "empty": "Chưa có bài viết đã lưu",
+    "empty_body": "Lưu bài viết để xem lại tại đây."
+  },
+  "explore": {
+    "title": "Khám phá",
+    "subtitle": "Khám phá bài viết công khai và các cuộc trò chuyện nổi bật trên LinkUp.",
+    "loading": "Đang tải bài viết khám phá...",
+    "empty": "Chưa có bài viết khám phá"
+  },
+  "post_detail": {
+    "loading": "Đang tải bài viết...",
+    "unavailable": "Bài viết này không khả dụng."
+  },
+  "search": {
+    "title": "Tìm kiếm",
+    "results_for": "Kết quả cho \"{{keyword}}\"",
+    "empty_query": "Nhập từ khóa từ thanh tìm kiếm.",
+    "posts": "Bài viết",
+    "people": "Mọi người",
+    "no_posts": "Không tìm thấy bài viết",
+    "no_people": "Không tìm thấy người dùng"
+  },
+  "hashtag": {
+    "subtitle": "Bài viết sử dụng hashtag này.",
+    "loading": "Đang tải bài viết hashtag...",
+    "empty": "Chưa có bài viết cho hashtag này"
   },
   "profile": {
     "unavailable_title": "Không thể xem hồ sơ",
@@ -116,18 +168,24 @@
     "no_followers": "Chưa có người theo dõi.",
     "not_following": "Chưa theo dõi ai.",
     "loading_posts": "Đang tải bài viết...",
-    "no_posts": "Chưa có bài viết."
+    "no_posts": "Chưa có bài viết.",
+    "private_content": "Bạn không có quyền xem nội dung này hoặc tài khoản đang riêng tư."
   },
   "settings": {
     "title": "Cài đặt tài khoản",
     "subtitle": "Quản lý thông tin cá nhân và tùy chọn tài khoản.",
     "section_title": "Cài đặt {{section}}",
     "section_pending": "Phần này đã có giao diện và sẽ được nối API khi backend sẵn sàng.",
+    "notifications_subtitle": "Chọn cách LinkUp thông báo hoạt động cho bạn.",
+    "privacy_subtitle": "Quản lý quyền hiển thị hồ sơ, thông tin tài khoản và hành vi phát nội dung.",
+    "security_subtitle": "Quản lý mật khẩu, phiên đăng nhập và tùy chọn bảo mật.",
+    "support_subtitle": "Công cụ hỗ trợ sẽ được nối khi backend có API tương ứng.",
     "profile_load_error": "Không thể tải chi tiết hồ sơ từ backend.",
     "personalize": "Cá nhân hóa LinkUp",
     "personalize_text": "Giao diện tùy chỉnh và tính năng độc quyền cho hồ sơ của bạn.",
     "go_premium": "Nâng cấp Premium",
     "profile_information": "Thông tin hồ sơ",
+    "change_cover": "Đổi ảnh bìa",
     "display_name": "Tên hiển thị",
     "bio": "Giới thiệu",
     "bio_placeholder": "Viết một đoạn giới thiệu nghề nghiệp ngắn.",
@@ -142,15 +200,19 @@
     "account_preferences": "Tùy chọn tài khoản",
     "language_body": "Ngôn ngữ mặc định cho giao diện.",
     "content_visibility": "Hiển thị nội dung",
-    "content_visibility_body": "Cho phép công cụ tìm kiếm lập chỉ mục hồ sơ của bạn.",
+    "content_visibility_body": "Cho phép nội dung của bạn hiển thị công khai theo quyền backend cho phép.",
+    "search_indexing": "Lập chỉ mục tìm kiếm",
+    "search_indexing_body": "Cho phép công cụ tìm kiếm lập chỉ mục hồ sơ của bạn.",
     "autoplay_videos": "Tự phát video",
     "autoplay_videos_body": "Tự phát video trong bảng tin khi cuộn.",
     "private_account": "Tài khoản riêng tư",
     "private_account_body": "Phê duyệt người theo dõi trước khi họ có thể theo dõi cập nhật của bạn.",
     "danger_zone": "Khu vực nguy hiểm",
-    "danger_body": "API vô hiệu hóa và xóa tài khoản chưa khả dụng.",
+    "danger_body": "Vô hiệu hóa tài khoản và thu hồi các phiên refresh token đang hoạt động.",
     "manage_account": "Quản lý tài khoản",
+    "deactivate_confirm": "Vô hiệu hóa tài khoản này? Bạn sẽ bị đăng xuất ngay.",
     "could_not_save": "Không thể lưu cài đặt.",
+    "notification_preferences": "Tùy chọn thông báo",
     "mock_notifications_title": "Tùy chọn thông báo",
     "email_notifications": "Thông báo qua email",
     "email_notifications_body": "Nhận cập nhật về theo dõi, tin nhắn và bình luận.",
@@ -158,24 +220,50 @@
     "push_notifications_body": "Hiển thị thông báo thời gian thực khi dùng LinkUp.",
     "privacy_controls": "Kiểm soát quyền riêng tư",
     "security_title": "Bảo mật",
+    "password_title": "Mật khẩu",
+    "change_password": "Đổi mật khẩu",
+    "current_password": "Mật khẩu hiện tại",
+    "new_password": "Mật khẩu mới",
+    "confirm_password": "Xác nhận mật khẩu",
+    "password_mismatch": "Mật khẩu mới và xác nhận mật khẩu không khớp.",
+    "two_factor": "Xác thực hai lớp",
+    "two_factor_body": "Lưu tùy chọn xác thực hai lớp cho tài khoản.",
+    "active_sessions": "Phiên đăng nhập",
+    "current_session": "Phiên hiện tại",
+    "session": "Phiên đăng nhập",
+    "session_dates": "Tạo {{created}} · Hết hạn {{expires}}",
+    "revoke_session": "Thu hồi",
+    "loading_sessions": "Đang tải phiên đăng nhập...",
+    "no_sessions": "Không có phiên đăng nhập hoạt động.",
+    "sessions_unavailable": "Không thể tải phiên đăng nhập.",
     "support_title": "Hỗ trợ",
+    "support_pending_body": "Backend chưa có API trung tâm trợ giúp, báo lỗi hoặc ticket, nên tab này tạm thời chỉ hiển thị thông tin.",
+    "backend_unavailable_body": "Khu vực này chưa cho chỉnh sửa vì backend chưa có API cài đặt tương ứng. Frontend sẽ nối phần này khi các endpoint được bổ sung.",
     "footer_brand": "LinkUp Professional",
     "footer_rights": "© 2024 LinkUp Professional. Đã đăng ký bản quyền."
   },
   "connections": {
+    "network_label": "Mạng lưới",
     "find_people": "Tìm người",
     "find_people_body": "Tìm theo tên hoặc email, sau đó theo dõi chuyên gia bạn quan tâm.",
     "search_placeholder": "Tên hoặc email",
     "search_results": "Kết quả tìm kiếm",
+    "result_count": "{{count}} kết quả",
     "enter_keyword": "Nhập từ khóa để bắt đầu tìm kiếm.",
     "follow_requests": "Yêu cầu theo dõi",
+    "requests_short": "Yêu cầu",
     "approve": "Chấp nhận",
     "decline": "Từ chối",
     "no_pending": "Không có yêu cầu chờ xử lý.",
     "no_followers": "Chưa có người theo dõi.",
     "people_you_follow": "Bạn đang theo dõi {{count}} người.",
     "loading_list": "Đang tải {{title}}...",
-    "empty_following": "Bạn chưa theo dõi ai."
+    "empty_following": "Bạn chưa theo dõi ai.",
+    "suggestions": "Gợi ý cho bạn",
+    "suggested_reason": "Gợi ý từ LinkUp",
+    "loading_people": "Đang tải danh sách...",
+    "mutuals": "{{count}} kết nối chung",
+    "no_suggestions": "Chưa có gợi ý."
   },
   "chat": {
     "messages_unavailable": "Không thể tải tin nhắn",
@@ -187,11 +275,30 @@
     "messages_unavailable_short": "Tin nhắn không khả dụng.",
     "type_message": "Nhập tin nhắn...",
     "search_conversations": "Tìm cuộc trò chuyện...",
-    "no_messages": "Chưa có tin nhắn"
+    "no_messages": "Chưa có tin nhắn",
+    "all_messages": "Tất cả",
+    "groups": "Nhóm",
+    "archive": "Lưu trữ",
+    "no_archived": "Chưa có cuộc trò chuyện lưu trữ.",
+    "you_sent": "Bạn đã gửi",
+    "available": "Đang hoạt động",
+    "member_count": "{{count}} thành viên",
+    "call": "Gọi thoại",
+    "video_call": "Gọi video",
+    "conversation_info": "Thông tin cuộc trò chuyện",
+    "today": "Hôm nay",
+    "attach": "Đính kèm tệp",
+    "emoji": "Biểu tượng cảm xúc",
+    "enter_hint": "Nhấn Enter để gửi, Shift + Enter để xuống dòng"
   },
   "notifications": {
     "title": "Thông báo",
     "unread": "{{count}} chưa đọc",
-    "empty": "Chưa có thông báo."
+    "empty": "Chưa có thông báo.",
+    "loading": "Đang tải thông báo...",
+    "unavailable": "Không thể tải thông báo.",
+    "mark_all_read": "Đánh dấu tất cả đã đọc",
+    "view_all": "Xem tất cả thông báo"
   }
 }
+

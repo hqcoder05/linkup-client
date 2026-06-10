@@ -14,7 +14,12 @@ export function ChatPage() {
   const currentUser = useAuthStore((state) => state.user);
   const params = useParams();
   const navigate = useNavigate();
-  const conversations = useQuery({ queryKey: ['conversations'], queryFn: chatApi.conversations, retry: false });
+  const conversations = useQuery({
+    queryKey: ['conversations'],
+    queryFn: chatApi.conversations,
+    enabled: Boolean(currentUser?.id),
+    retry: false,
+  });
   const activeId = params.conversationId ? Number(params.conversationId) : undefined;
   const active = useMemo(
     () => conversations.data?.find((conversation) => conversation.id === activeId) ?? conversations.data?.[0],
@@ -22,7 +27,7 @@ export function ChatPage() {
   );
 
   return (
-    <Card className="mx-auto flex h-[calc(100vh-130px)] max-w-5xl overflow-hidden">
+    <Card className="-mx-4 -my-6 flex h-[calc(100vh-65px)] overflow-hidden rounded-none border-x border-slate-200 shadow-none sm:-mx-6">
       <ConversationList
         conversations={conversations.data ?? []}
         currentUser={currentUser}

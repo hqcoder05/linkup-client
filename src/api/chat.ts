@@ -9,7 +9,16 @@ export const chatApi = {
     unwrap<MessageDto[]>(
       apiClient.get(`/conversations/${conversationId}/messages`, { params: { before, take } }),
     ),
-  send: (conversationId: number, input: { content?: string; attachmentUrl?: string }) =>
+  send: (
+    conversationId: number,
+    input: {
+      content?: string;
+      attachmentUrl?: string;
+      sharedPostId?: number;
+      sharedStoryId?: number;
+      disappearAfterSeconds?: number;
+    },
+  ) =>
     unwrap<MessageDto>(apiClient.post(`/conversations/${conversationId}/messages`, input)),
   read: (conversationId: number) => unwrap<void>(apiClient.post(`/conversations/${conversationId}/read`)),
 };

@@ -15,6 +15,16 @@ export function NotificationsPage() {
     mutationFn: notificationsApi.read,
     onSuccess: () => void queryClient.invalidateQueries({ queryKey: ['notifications'] }),
   });
+  const readAll = useMutation({
+    mutationFn: notificationsApi.readAll,
+    onSuccess: () => {
+      queryClient.setQueryData(
+        ['notifications'],
+        (old: typeof notifications.data) => old?.map((item) => ({ ...item, read: true })) ?? old,
+      );
+      queryClient.setQueryData(['notifications-unread'], { unreadCount: 0 });
+    },
+  });
   const unread = (notifications.data ?? []).filter((item) => !item.read);
 
   return (
@@ -24,7 +34,7 @@ export function NotificationsPage() {
           <h1 className="text-2xl font-bold text-slate-950">{t('notifications.title')}</h1>
           <p className="text-sm text-slate-500">{t('notifications.unread', { count: unread.length })}</p>
         </div>
-        <Button variant="secondary" onClick={() => unread.forEach((item) => read.mutate(item.id))}>
+        <Button variant="secondary" disabled={!unread.length || readAll.isPending} onClick={() => readAll.mutate()}>
           <CheckCircle className="h-4 w-4" /> Mark read
         </Button>
       </Card>

@@ -1,12 +1,12 @@
-import { zodResolver } from '@hookform/resolvers/zod';
+﻿import { zodResolver } from '@hookform/resolvers/zod';
 import { Eye, EyeOff, Briefcase } from 'lucide-react';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { z } from 'zod';
-import { FcGoogle } from 'react-icons/fc';
 import { FaFacebook } from 'react-icons/fa';
+import { FcGoogle } from 'react-icons/fc';
+import * as z from 'zod';
 import { authApi } from '@/api/auth';
 import { apiMessage } from '@/api/client';
 import { useAuthStore } from '@/stores/authStore';
@@ -42,7 +42,7 @@ export function LoginPage() {
   return (
     <div className="flex min-h-[calc(100vh-80px)] items-center justify-center px-4 py-12 font-['Inter',_sans-serif]">
       <div className="w-full max-w-[480px] rounded-2xl border border-slate-100 bg-white p-10 shadow-[0_8px_30px_rgb(0,0,0,0.04)] sm:p-12">
-        
+
         <div className="mb-8 text-center">
           <div className="mx-auto mb-6 flex h-12 w-12 items-center justify-center rounded-xl bg-slate-900 text-white">
             <Briefcase className="h-6 w-6" />
@@ -53,17 +53,17 @@ export function LoginPage() {
           <p className="mt-2 text-[15px] text-slate-500">{t('login.subtitle', 'Sign in to continue building your network.')}</p>
         </div>
 
-        {error && <div className="mb-6 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>}
+        {error && <div className="mb-6 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>}      
 
         <form onSubmit={submit} className="space-y-5">
           <div>
             <label className="mb-1.5 block text-[13px] font-medium text-slate-700">{t('login.email', 'Email')}</label>
-            <input 
-              className="w-full rounded-lg border border-slate-200 px-4 py-3 text-[15px] focus:border-black focus:outline-none focus:ring-1 focus:ring-black" 
-              placeholder="name@company.com" 
+            <input
+              className="w-full rounded-lg border border-slate-200 px-4 py-3 text-[15px] focus:border-black focus:outline-none focus:ring-1 focus:ring-black"
+              placeholder="name@company.com"
               type="email"
               autoComplete="email"
-              {...form.register('email')} 
+              {...form.register('email')}
             />
           </div>
 
@@ -76,9 +76,9 @@ export function LoginPage() {
                 autoComplete="current-password"
                 {...form.register('password')}
               />
-              <button 
-                type="button" 
-                className="absolute right-4 top-3.5 text-slate-400" 
+              <button
+                type="button"
+                className="absolute right-4 top-3.5 text-slate-400"
                 onClick={() => setShowPassword(!showPassword)}
               >
                 {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}

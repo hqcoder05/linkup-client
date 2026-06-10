@@ -1,6 +1,6 @@
 import { Client } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
-import type { MessageDto } from '@/types/api';
+import type { MessageDto, NotificationDto } from '@/types/api';
 
 export function createChatClient(onConnect?: () => void) {
   return new Client({
@@ -17,5 +17,15 @@ export function subscribeToConversation(
 ) {
   return client.subscribe(`/topic/conversations/${conversationId}`, (frame) => {
     onMessage(JSON.parse(frame.body) as MessageDto);
+  });
+}
+
+export function subscribeToNotifications(
+  client: Client,
+  userId: number,
+  onNotification: (notification: NotificationDto) => void,
+) {
+  return client.subscribe(`/topic/notifications/${userId}`, (frame) => {
+    onNotification(JSON.parse(frame.body) as NotificationDto);
   });
 }

@@ -5,4 +5,5 @@ export const notificationsApi = {
   list: () => unwrap<NotificationDto[]>(apiClient.get('/notifications')),
   unreadCount: () => unwrap<{ unreadCount: number }>(apiClient.get('/notifications/unread-count')),
   read: (id: number) => unwrap<void>(apiClient.post(`/notifications/${id}/read`)),
+  readAll: () => unwrap<void>(apiClient.post('/notifications/read-all')),
 };

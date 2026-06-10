@@ -1,4 +1,4 @@
-import { Heart, MessageCircle, MoreVertical, Send, Trash2 } from 'lucide-react';
+import { Bookmark, Check, Heart, MessageCircle, MoreVertical, Pencil, Send, Trash2, X } from 'lucide-react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
@@ -15,6 +15,11 @@ export function PostCard({ post }: { post: PostDto }) {
   const { t } = useTranslation();
   const [commentsOpen, setCommentsOpen] = useState(false);
   const [comment, setComment] = useState('');
+  const [editingPost, setEditingPost] = useState(false);
+  const [captionDraft, setCaptionDraft] = useState(post.caption ?? '');
+  const [editingCommentId, setEditingCommentId] = useState<number | null>(null);
+  const [commentDraft, setCommentDraft] = useState('');
+  const [saved, setSaved] = useState(Boolean(post.savedByCurrentUser));
   const queryClient = useQueryClient();
   const currentUser = useAuthStore((state) => state.user);
   const mine = currentUser?.id === post.user.id;
@@ -29,6 +34,15 @@ export function PostCard({ post }: { post: PostDto }) {
     mutationFn: () => (post.likedByCurrentUser ? postsApi.unlike(post.id) : postsApi.like(post.id)),
     onSuccess: () => void queryClient.invalidateQueries({ queryKey: ['feed'] }),
   });
+  const save = useMutation({
+    mutationFn: () => (saved ? postsApi.unsave(post.id) : postsApi.save(post.id)),
+    onMutate: () => setSaved((value) => !value),
+    onError: () => setSaved((value) => !value),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ['posts', 'saved'] });
+      void queryClient.invalidateQueries({ queryKey: ['feed'] });
+    },
+  });
 
   const addComment = useMutation({
     mutationFn: () => postsApi.comment(post.id, comment.trim()),
@@ -42,6 +56,30 @@ export function PostCard({ post }: { post: PostDto }) {
   const remove = useMutation({
     mutationFn: () => postsApi.remove(post.id),
     onSuccess: () => void queryClient.invalidateQueries({ queryKey: ['feed'] }),
+  });
+  const updatePost = useMutation({
+    mutationFn: () => postsApi.update(post.id, { caption: captionDraft.trim() }),
+    onSuccess: () => {
+      setEditingPost(false);
+      void queryClient.invalidateQueries({ queryKey: ['feed'] });
+      void queryClient.invalidateQueries({ queryKey: ['profile-posts'] });
+    },
+  });
+  const updateComment = useMutation({
+    mutationFn: () => postsApi.updateComment(editingCommentId!, commentDraft.trim()),
+    onSuccess: () => {
+      setEditingCommentId(null);
+      setCommentDraft('');
+      void queryClient.invalidateQueries({ queryKey: ['comments', post.id] });
+      void queryClient.invalidateQueries({ queryKey: ['feed'] });
+    },
+  });
+  const deleteComment = useMutation({
+    mutationFn: postsApi.deleteComment,
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ['comments', post.id] });
+      void queryClient.invalidateQueries({ queryKey: ['feed'] });
+    },
   });
   const primaryMedia = post.media?.[0];
 
@@ -67,11 +105,38 @@ export function PostCard({ post }: { post: PostDto }) {
               >
                 <Trash2 className="h-4 w-4" /> {t('post.delete_post')}
               </button>
+              <button
+                className="btn-ghost w-full justify-start"
+                onClick={() => {
+                  setCaptionDraft(post.caption ?? '');
+                  setEditingPost(true);
+                }}
+              >
+                <Pencil className="h-4 w-4" /> {t('post.edit_post')}
+              </button>
             </div>
           </div>
         )}
       </div>
-      {post.caption && <blockquote className="mx-4 border-l-4 border-brand-500 pl-3 text-slate-700">{post.caption}</blockquote>}
+      {editingPost ? (
+        <div className="mx-4 space-y-2">
+          <textarea
+            className="input-field min-h-24 resize-y"
+            value={captionDraft}
+            onChange={(event) => setCaptionDraft(event.target.value)}
+          />
+          <div className="flex justify-end gap-2">
+            <Button variant="secondary" onClick={() => setEditingPost(false)}>
+              <X className="h-4 w-4" /> {t('common.cancel')}
+            </Button>
+            <Button disabled={updatePost.isPending} onClick={() => updatePost.mutate()}>
+              <Check className="h-4 w-4" /> {t('common.save')}
+            </Button>
+          </div>
+        </div>
+      ) : (
+        post.caption && <blockquote className="mx-4 border-l-4 border-brand-500 pl-3 text-slate-700">{post.caption}</blockquote>
+      )}
       {primaryMedia?.type?.startsWith('video') && (
         <video src={primaryMedia.url} className="mt-4 max-h-[520px] w-full bg-black object-contain" controls />
       )}
@@ -79,27 +144,83 @@ export function PostCard({ post }: { post: PostDto }) {
         <img src={primaryMedia.url} alt="Post" className="mt-4 max-h-[520px] w-full object-cover" />
       )}
       <div className="mt-3 flex items-center justify-between border-t border-slate-200 px-4 py-2">
-        <button
-          className={post.likedByCurrentUser ? 'btn-ghost text-red-600' : 'btn-ghost'}
-          onClick={() => like.mutate()}
-        >
-          <Heart className="h-4 w-4" fill={post.likedByCurrentUser ? 'currentColor' : 'none'} />
-          {t('post.like')} {post.likesCount}
-        </button>
-        <button className="btn-ghost" onClick={() => setCommentsOpen((value) => !value)}>
-          <MessageCircle className="h-4 w-4" /> {t('post.comment')} {post.commentsCount}
+        <div className="flex items-center gap-1">
+          <button
+            className={post.likedByCurrentUser ? 'btn-ghost text-red-600' : 'btn-ghost'}
+            onClick={() => like.mutate()}
+          >
+            <Heart className="h-4 w-4" fill={post.likedByCurrentUser ? 'currentColor' : 'none'} />
+            {t('post.like')} {post.likesCount}
+          </button>
+          <button className="btn-ghost" onClick={() => setCommentsOpen((value) => !value)}>
+            <MessageCircle className="h-4 w-4" /> {t('post.comment')} {post.commentsCount}
+          </button>
+        </div>
+        <button className={saved ? 'btn-ghost text-slate-950' : 'btn-ghost'} onClick={() => save.mutate()} aria-label={t('post.save')}>
+          <Bookmark className="h-4 w-4" fill={saved ? 'currentColor' : 'none'} />
+          {saved ? t('post.saved') : t('post.save')}
         </button>
       </div>
+      {post.hashtags?.length > 0 && (
+        <div className="flex flex-wrap gap-2 px-4 pb-3">
+          {post.hashtags.map((tag) => (
+            <Link key={tag} to={`/hashtags/${encodeURIComponent(tag)}`} className="text-sm font-semibold text-blue-600 hover:text-blue-700">
+              #{tag}
+            </Link>
+          ))}
+        </div>
+      )}
       {commentsOpen && (
         <div className="border-t border-slate-100 p-4">
           <div className="space-y-3">
             {comments.data?.map((item) => (
               <div key={item.id} className="flex gap-2">
                 <Avatar user={item.user} size="sm" />
-                <div className="rounded-lg bg-slate-50 px-3 py-2">
+                <div className="min-w-0 flex-1 rounded-lg bg-slate-50 px-3 py-2">
                   <div className="text-sm font-semibold text-slate-900">{displayName(item.user)}</div>
-                  <p className="text-sm text-slate-700">{item.content}</p>
+                  {editingCommentId === item.id ? (
+                    <div className="mt-1 space-y-2">
+                      <input
+                        className="input-field"
+                        value={commentDraft}
+                        onChange={(event) => setCommentDraft(event.target.value)}
+                      />
+                      <div className="flex gap-2">
+                        <button className="text-xs font-semibold text-slate-600" onClick={() => setEditingCommentId(null)}>
+                          {t('common.cancel')}
+                        </button>
+                        <button
+                          className="text-xs font-semibold text-slate-950"
+                          disabled={!commentDraft.trim() || updateComment.isPending}
+                          onClick={() => updateComment.mutate()}
+                        >
+                          {t('common.save')}
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <p className="text-sm text-slate-700">{item.content}</p>
+                  )}
                   <p className="text-xs text-slate-400">{formatDateTime(item.createdAt)}</p>
+                  {item.user.id === currentUser?.id && editingCommentId !== item.id && (
+                    <div className="mt-1 flex gap-3">
+                      <button
+                        className="text-xs font-semibold text-slate-500 hover:text-slate-950"
+                        onClick={() => {
+                          setEditingCommentId(item.id);
+                          setCommentDraft(item.content);
+                        }}
+                      >
+                        {t('common.edit')}
+                      </button>
+                      <button
+                        className="text-xs font-semibold text-red-600 hover:text-red-700"
+                        onClick={() => deleteComment.mutate(item.id)}
+                      >
+                        {t('common.delete')}
+                      </button>
+                    </div>
+                  )}
                 </div>
               </div>
             ))}
