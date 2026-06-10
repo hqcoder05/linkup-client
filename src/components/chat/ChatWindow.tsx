@@ -1,4 +1,4 @@
-import { Info, Paperclip, Phone, Send, Smile, Video } from 'lucide-react';
+import { ImagePlus, Info, Paperclip, Phone, Send, Smile, Video, X } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
@@ -6,13 +6,17 @@ import { clsx } from 'clsx';
 import { Avatar } from '@/components/common/Avatar';
 import { Button } from '@/components/ui/Button';
 import { chatApi } from '@/api/chat';
+import { postsApi } from '@/api/posts';
 import { createChatClient, subscribeToConversation } from '@/websocket/chatSocket';
 import type { ConversationDto, MessageDto, UserDto } from '@/types/api';
+import { isMessageMine } from '@/utils/chat';
 import { displayName } from '@/utils/format';
 
 export function ChatWindow({ conversation, currentUser }: { conversation?: ConversationDto; currentUser: UserDto | null }) {
   const { t } = useTranslation();
   const [draft, setDraft] = useState('');
+  const [notice, setNotice] = useState('');
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [liveMessages, setLiveMessages] = useState<MessageDto[]>([]);
   const queryClient = useQueryClient();
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -23,9 +27,20 @@ export function ChatWindow({ conversation, currentUser }: { conversation?: Conve
     retry: false,
   });
   const send = useMutation({
-    mutationFn: () => chatApi.send(conversation!.id, { content: draft.trim() }),
+    mutationFn: async () => {
+      const content = draft.trim();
+      if (!selectedFile) return chatApi.send(conversation!.id, { content });
+      const media = selectedFile.type.startsWith('video/')
+        ? await postsApi.uploadVideo(selectedFile)
+        : await postsApi.uploadImage(selectedFile);
+      return chatApi.send(conversation!.id, {
+        content: content || undefined,
+        attachmentUrl: media.url,
+      });
+    },
     onSuccess: () => {
       setDraft('');
+      setSelectedFile(null);
       void queryClient.invalidateQueries({ queryKey: ['messages', conversation?.id] });
       void queryClient.invalidateQueries({ queryKey: ['conversations'] });
     },
@@ -73,6 +88,10 @@ export function ChatWindow({ conversation, currentUser }: { conversation?: Conve
 
   const peer = conversationPeer(conversation, currentUser);
   const title = conversation.name || (conversation.group ? conversation.members.map((member) => displayName(member)).join(', ') : displayName(peer));
+  const showUnsupportedCall = () => {
+    setNotice(t('chat.call_unavailable'));
+    window.setTimeout(() => setNotice(''), 3500);
+  };
 
   return (
     <section className="flex min-h-0 flex-1 flex-col bg-slate-50">
@@ -90,10 +109,10 @@ export function ChatWindow({ conversation, currentUser }: { conversation?: Conve
           </div>
         </div>
         <div className="flex items-center gap-5 text-slate-900">
-          <button type="button" className="rounded-full p-2 transition-colors hover:bg-slate-100" aria-label={t('chat.call')}>
+          <button type="button" className="rounded-full p-2 transition-colors hover:bg-slate-100" onClick={showUnsupportedCall} aria-label={t('chat.call')}>
             <Phone className="h-5 w-5" />
           </button>
-          <button type="button" className="rounded-full p-2 transition-colors hover:bg-slate-100" aria-label={t('chat.video_call')}>
+          <button type="button" className="rounded-full p-2 transition-colors hover:bg-slate-100" onClick={showUnsupportedCall} aria-label={t('chat.video_call')}>
             <Video className="h-5 w-5" />
           </button>
           <button type="button" className="rounded-full p-2 transition-colors hover:bg-slate-100" aria-label={t('chat.conversation_info')}>
@@ -101,6 +120,11 @@ export function ChatWindow({ conversation, currentUser }: { conversation?: Conve
           </button>
         </div>
       </header>
+      {notice && (
+        <div className="border-b border-amber-100 bg-amber-50 px-8 py-2 text-sm font-medium text-amber-800">
+          {notice}
+        </div>
+      )}
 
       <div ref={scrollRef} className="min-h-0 flex-1 overflow-y-auto px-8 py-7">
         <div className="mb-7 flex justify-center">
@@ -114,7 +138,7 @@ export function ChatWindow({ conversation, currentUser }: { conversation?: Conve
 
         <div className="space-y-7">
           {allMessages.map((message) => {
-            const mine = message.sender.id === currentUser?.id || message.mine;
+            const mine = isMessageMine(message, currentUser);
             return (
               <MessageBubble key={message.id} message={message} mine={mine} />
             );
@@ -123,10 +147,23 @@ export function ChatWindow({ conversation, currentUser }: { conversation?: Conve
       </div>
 
       <footer className="shrink-0 border-t border-slate-200 bg-white px-8 py-6">
+        {selectedFile && (
+          <div className="mb-3 flex items-center justify-between gap-3 rounded-xl bg-slate-100 px-4 py-2 text-sm text-slate-700">
+            <span className="truncate">{selectedFile.name}</span>
+            <button type="button" className="rounded-full p-1 hover:bg-slate-200" onClick={() => setSelectedFile(null)}>
+              <X className="h-4 w-4" />
+            </button>
+          </div>
+        )}
         <div className="flex items-center gap-4">
-          <button type="button" className="rounded-full p-2 text-slate-800 transition-colors hover:bg-slate-100" aria-label={t('chat.attach')}>
+          <label className="cursor-pointer rounded-full p-2 text-slate-800 transition-colors hover:bg-slate-100" aria-label={t('post.add_image')}>
+            <ImagePlus className="h-5 w-5" />
+            <input className="hidden" type="file" accept="image/*" onChange={(event) => setSelectedFile(event.target.files?.[0] ?? null)} />
+          </label>
+          <label className="cursor-pointer rounded-full p-2 text-slate-800 transition-colors hover:bg-slate-100" aria-label={t('post.video')}>
             <Paperclip className="h-5 w-5" />
-          </button>
+            <input className="hidden" type="file" accept="video/*" onChange={(event) => setSelectedFile(event.target.files?.[0] ?? null)} />
+          </label>
           <button type="button" className="rounded-full p-2 text-slate-800 transition-colors hover:bg-slate-100" aria-label={t('chat.emoji')}>
             <Smile className="h-5 w-5" />
           </button>
@@ -137,14 +174,14 @@ export function ChatWindow({ conversation, currentUser }: { conversation?: Conve
             value={draft}
             onChange={(event) => setDraft(event.target.value)}
             onKeyDown={(event) => {
-              if (event.key === 'Enter' && !event.shiftKey && draft.trim()) {
+              if (event.key === 'Enter' && !event.shiftKey && (draft.trim() || selectedFile)) {
                 event.preventDefault();
                 send.mutate();
               }
             }}
           />
           <Button
-            disabled={!draft.trim() || send.isPending}
+            disabled={(!draft.trim() && !selectedFile) || send.isPending}
             onClick={() => send.mutate()}
             className="h-14 w-14 rounded-full bg-black p-0 text-white shadow-lg hover:bg-slate-900"
             aria-label={t('post.post')}
@@ -172,12 +209,8 @@ function MessageBubble({ message, mine }: { message: MessageDto; mine: boolean }
                 : 'rounded-bl-sm bg-slate-200 text-slate-950',
             )}
           >
-            <p className="whitespace-pre-wrap">{message.deleted ? '' : message.content}</p>
-            {message.attachmentUrl && (
-              <a href={message.attachmentUrl} className={mine ? 'mt-2 block text-sm underline text-white' : 'mt-2 block text-sm underline text-slate-800'} target="_blank" rel="noreferrer">
-                Attachment
-              </a>
-            )}
+            {message.content && <p className="whitespace-pre-wrap">{message.deleted ? '' : message.content}</p>}
+            {message.attachmentUrl && <AttachmentPreview url={message.attachmentUrl} mine={mine} />}
           </div>
           <p className={clsx('mt-1 text-xs text-slate-500', mine ? 'text-right' : 'text-left')}>
             {formatMessageTime(message.createdAt)}
@@ -186,6 +219,22 @@ function MessageBubble({ message, mine }: { message: MessageDto; mine: boolean }
         </div>
       </div>
     </div>
+  );
+}
+
+function AttachmentPreview({ url, mine }: { url: string; mine: boolean }) {
+  const video = /\.(mp4|webm|mov|m4v)(\?|$)/i.test(url);
+  if (video) {
+    return <video className="mt-3 max-h-72 rounded-xl object-cover" src={url} controls />;
+  }
+  return (
+    <a href={url} target="_blank" rel="noreferrer">
+      <img
+        className={clsx('mt-3 max-h-72 rounded-xl object-cover', mine ? 'bg-black' : 'bg-white')}
+        src={url}
+        alt="Attachment"
+      />
+    </a>
   );
 }
 

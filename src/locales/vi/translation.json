@@ -120,6 +120,8 @@
   "stories": {
     "create": "Tạo tin",
     "uploading": "Đang tải lên...",
+    "caption_placeholder": "Thêm mô tả cho tin...",
+    "could_not_create": "Không thể tạo tin.",
     "loading": "Đang tải tin...",
     "empty": "Chưa có tin.",
     "unavailable": "Không thể tải tin.",
@@ -289,6 +291,8 @@
     "today": "Hôm nay",
     "attach": "Đính kèm tệp",
     "emoji": "Biểu tượng cảm xúc",
+    "call_unavailable": "Gọi thoại và video cần backend signaling/WebRTC. Backend hiện chưa có API này.",
+    "could_not_send": "Không thể gửi tin nhắn.",
     "enter_hint": "Nhấn Enter để gửi, Shift + Enter để xuống dòng"
   },
   "notifications": {

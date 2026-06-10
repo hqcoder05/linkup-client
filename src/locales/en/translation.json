@@ -120,6 +120,8 @@
   "stories": {
     "create": "Create story",
     "uploading": "Uploading...",
+    "caption_placeholder": "Add a caption to your story...",
+    "could_not_create": "Could not create story.",
     "loading": "Loading stories...",
     "empty": "No stories yet.",
     "unavailable": "Stories are unavailable.",
@@ -289,6 +291,8 @@
     "today": "Today",
     "attach": "Attach file",
     "emoji": "Emoji",
+    "call_unavailable": "Voice and video calls require backend signaling/WebRTC. The backend does not expose that API yet.",
+    "could_not_send": "Could not send message.",
     "enter_hint": "Press Enter to send, Shift + Enter for new line"
   },
   "notifications": {

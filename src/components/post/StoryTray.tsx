@@ -2,7 +2,9 @@ import { Eye, Plus, Trash2, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
+import { apiMessage } from '@/api/client';
 import { Avatar } from '@/components/common/Avatar';
+import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { postsApi } from '@/api/posts';
 import { storiesApi } from '@/api/stories';
@@ -17,6 +19,8 @@ export function StoryTray() {
   const [activeGroup, setActiveGroup] = useState<UserStoriesDto | null>(null);
   const [activeIndex, setActiveIndex] = useState(0);
   const [viewersOpen, setViewersOpen] = useState(false);
+  const [storyFile, setStoryFile] = useState<File | null>(null);
+  const [storyCaption, setStoryCaption] = useState('');
 
   const stories = useQuery({
     queryKey: ['stories'],
@@ -26,19 +30,37 @@ export function StoryTray() {
   });
 
   const createStory = useMutation({
-    mutationFn: async (file: File) => {
-      const media = file.type.startsWith('video/') ? await postsApi.uploadVideo(file) : await postsApi.uploadImage(file);
-      return storiesApi.create({
-        media: [
-          {
-            url: media.url,
-            thumbnailUrl: media.thumbnailUrl,
-            type: media.type,
-          },
-        ],
-      });
+    mutationFn: async () => {
+      const uploadedMediaIds: number[] = [];
+      try {
+        const media = storyFile
+          ? storyFile.type.startsWith('video/')
+            ? await postsApi.uploadVideo(storyFile)
+            : await postsApi.uploadImage(storyFile)
+          : null;
+        if (media) uploadedMediaIds.push(media.id);
+        return await storiesApi.create({
+          caption: storyCaption.trim() || undefined,
+          media: media
+            ? [
+                {
+                  url: media.url,
+                  thumbnailUrl: media.thumbnailUrl,
+                  type: media.type,
+                  width: null,
+                  height: null,
+                },
+              ]
+            : [],
+        });
+      } catch (error) {
+        await Promise.allSettled(uploadedMediaIds.map((id) => postsApi.deleteMedia(id)));
+        throw error;
+      }
     },
     onSuccess: () => {
+      setStoryFile(null);
+      setStoryCaption('');
       void queryClient.invalidateQueries({ queryKey: ['stories'] });
     },
   });
@@ -97,7 +119,7 @@ export function StoryTray() {
               disabled={createStory.isPending}
               onChange={(event) => {
                 const file = event.target.files?.[0];
-                if (file) createStory.mutate(file);
+                if (file) setStoryFile(file);
                 event.target.value = '';
               }}
             />
@@ -133,6 +155,21 @@ export function StoryTray() {
           {stories.isError && <p className="self-center px-3 text-sm text-slate-500">{t('stories.unavailable')}</p>}
         </div>
       </Card>
+
+      {storyFile && (
+        <CreateStoryModal
+          file={storyFile}
+          caption={storyCaption}
+          onCaptionChange={setStoryCaption}
+          onClose={() => {
+            setStoryFile(null);
+            setStoryCaption('');
+          }}
+          onSubmit={() => createStory.mutate()}
+          pending={createStory.isPending}
+          error={createStory.error}
+        />
+      )}
 
       {activeGroup && activeStory && (
         <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/85 px-3 py-4">
@@ -235,6 +272,74 @@ export function StoryTray() {
         </div>
       )}
     </>
+  );
+}
+
+function CreateStoryModal({
+  file,
+  caption,
+  onCaptionChange,
+  onClose,
+  onSubmit,
+  pending,
+  error,
+}: {
+  file: File;
+  caption: string;
+  onCaptionChange: (value: string) => void;
+  onClose: () => void;
+  onSubmit: () => void;
+  pending: boolean;
+  error: unknown;
+}) {
+  const { t } = useTranslation();
+  const [previewUrl, setPreviewUrl] = useState('');
+
+  useEffect(() => {
+    const url = URL.createObjectURL(file);
+    setPreviewUrl(url);
+    return () => URL.revokeObjectURL(url);
+  }, [file]);
+
+  return (
+    <div className="fixed inset-0 z-[80] flex items-center justify-center bg-black/70 px-4 py-6">
+      <div className="w-full max-w-md overflow-hidden rounded-2xl bg-white shadow-2xl">
+        <div className="flex items-center justify-between border-b border-slate-100 px-4 py-3">
+          <h2 className="font-bold text-slate-950">{t('stories.create')}</h2>
+          <button type="button" className="rounded-full p-2 hover:bg-slate-100" onClick={onClose}>
+            <X className="h-5 w-5" />
+          </button>
+        </div>
+        <div className="bg-slate-950">
+          {file.type.startsWith('video/') ? (
+            <video className="max-h-[420px] w-full object-contain" src={previewUrl} controls />
+          ) : (
+            <img className="max-h-[420px] w-full object-contain" src={previewUrl} alt="Story preview" />
+          )}
+        </div>
+        <div className="space-y-3 p-4">
+          <textarea
+            className="min-h-20 w-full resize-none rounded-xl border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400"
+            placeholder={t('stories.caption_placeholder')}
+            value={caption}
+            onChange={(event) => onCaptionChange(event.target.value)}
+          />
+          {Boolean(error) && (
+            <p className="text-sm text-red-600">
+              {String(apiMessage(error, String(t('stories.could_not_create'))))}
+            </p>
+          )}
+          <div className="flex justify-end gap-2">
+            <Button type="button" variant="secondary" onClick={onClose}>
+              {t('common.cancel')}
+            </Button>
+            <Button type="button" disabled={pending} onClick={onSubmit}>
+              {pending ? t('stories.uploading') : t('post.post')}
+            </Button>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }
 
